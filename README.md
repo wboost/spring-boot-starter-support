@@ -1,4 +1,4 @@
-![](https://raw.github.com/meolu/walle-web/master/docs/logo.jpg)
+![](http://www.wboost.top:18080/icon.png)
 
 wboost ： spring-boot-starter-support
 =========================
@@ -37,7 +37,7 @@ Quick Start
 </dependency>
 ```
 
-###mybatis-spring-boot-starter
+##mybatis-spring-boot-starter
 ```
 <dependency>
     <groupId>top.wboost</groupId>
@@ -51,7 +51,7 @@ Quick Start
 <dependency>
     <groupId>top.wboost</groupId>
     <version>3.1.1.RELEASE</version>
-	<artifactId>wagger-spring-boot-starter</artifactId>
+    <artifactId>wagger-spring-boot-starter</artifactId>
 </dependency>
 ```
 
