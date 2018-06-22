@@ -9,6 +9,28 @@
   <packaging>pom</packaging>
   <artifactId>spring-boot-starter-support</artifactId>
   <name>spring-boot-starter-support</name>
+  <description>project auto plugins for spring-boot</description>
+	<url>http://www.wboost.top</url>
+	<developers>
+		<developer>
+			<id>wboost</id>
+			<name>jwsun</name>
+			<email>wboost.top@gmail.com</email>
+		</developer>
+	</developers>
+	<licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:git@github.com:wboost/common.git</connection>
+        <developerConnection>scm:git:git@github.com:wboost/common.git</developerConnection>
+        <url>https://github.com/wboost/common</url>
+      	<tag>common</tag>
+  	</scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -19,4 +41,151 @@
     <module>webmvc-spring-boot-starter</module>
     <module>swagger-spring-boot-starter</module>
   </modules>
+  
+  <profiles>
+		<profile>
+            <id>release</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>oss</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>oss</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                </repository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <!-- Source -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Javadoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.4</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>  
+			                <additionalparam>-Xdoclint:none</additionalparam>  
+			            </configuration>  
+                    </plugin>
+                    <!-- Gpg Signature -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
+        	<id>chinaoly</id>
+        	<distributionManagement>
+				<snapshotRepository>
+					<id>nexus2</id>
+					<name>common-manager</name>
+					<url>http://192.168.16.181:8081/repository/chinaoly/</url>
+					<uniqueVersion>true</uniqueVersion>
+				</snapshotRepository>
+		
+				<repository>
+					<id>nexus2</id>
+					<name>User Porject Release</name>
+					<url>http://192.168.16.181:8081/repository/chinaoly/</url>
+				</repository>
+			</distributionManagement>
+        </profile>
+	</profiles>
+	
+	
+	
+	
+
+	<!-- build会共享给子项目 -->
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${org.apache.maven.plugins.version}</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
+
+				<!-- 源码deploy -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.0.1</version>
+					<configuration>
+						<attach>true</attach>
+					</configuration>
+					<executions>
+						<execution>
+							<phase>compile</phase>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${org.apache.maven.plugins.version}</version>
+				</plugin>
+				
+				<plugin>
+			        <artifactId>maven-resources-plugin</artifactId>
+			        <version>2.6</version>
+			        <executions>
+			          <execution>
+			            <id>default-testResources</id>
+			            <phase>process-test-resources</phase>
+			            <goals>
+			              <goal>testResources</goal>
+			            </goals>
+			          </execution>
+			          <execution>
+			            <id>default-resources</id>
+			            <phase>process-resources</phase>
+			            <goals>
+			              <goal>resources</goal>
+			            </goals>
+			          </execution>
+			        </executions>
+			      </plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>
