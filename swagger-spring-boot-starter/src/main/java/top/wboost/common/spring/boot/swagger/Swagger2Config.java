@@ -1,8 +1,7 @@
 package top.wboost.common.spring.boot.swagger;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +16,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import top.wboost.common.annotation.Explain;
 import top.wboost.common.base.entity.ResultEntity;
 import top.wboost.common.base.page.QueryPage;
-import top.wboost.common.base.restful.AutoRequestMehthodType;
 import top.wboost.common.spring.boot.swagger.config.SwaggerProperties;
 import top.wboost.common.spring.boot.swagger.template.QueryPageTemplate;
 import top.wboost.common.spring.boot.swagger.template.ResultEntityTemplate;
@@ -31,8 +29,10 @@ public class Swagger2Config {
     SwaggerProperties swaggerProperties;
 
     @Bean
+    @ConditionalOnMissingBean(Docket.class)
+    @SuppressWarnings("deprecation")
     public Docket createRestApi() {
-        Set<String> ignoreNames = AutoRequestMehthodType.getAllNames();
+        //Set<String> ignoreNames = AutoRequestMehthodType.getAllNames();
         return new Docket(DocumentationType.SWAGGER_2)
                 /**apiInfo**/
                 .apiInfo(apiInfo())

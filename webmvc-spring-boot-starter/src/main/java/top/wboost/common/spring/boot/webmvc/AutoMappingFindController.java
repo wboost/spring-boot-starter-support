@@ -1,6 +1,7 @@
 package top.wboost.common.spring.boot.webmvc;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,13 +28,26 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.UriComponents;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 
 import io.swagger.annotations.ApiParam;
+import io.swagger.models.Swagger;
 import lombok.Data;
+import springfox.documentation.annotations.ApiIgnore;
+import springfox.documentation.service.Documentation;
+import springfox.documentation.spring.web.DocumentationCache;
 import springfox.documentation.spring.web.PropertySourcedRequestMappingHandlerMapping;
 import springfox.documentation.spring.web.json.Json;
+import springfox.documentation.spring.web.json.JsonSerializer;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2Mapper;
+import springfox.documentation.swagger2.web.HostNameProvider;
+import springfox.documentation.swagger2.web.Swagger2Controller;
 import top.wboost.common.annotation.Explain;
 import top.wboost.common.base.entity.ResultEntity;
 import top.wboost.common.spring.boot.swagger.annotation.ApiVersion;
@@ -41,22 +55,38 @@ import top.wboost.common.spring.boot.swagger.annotation.GlobalForApiConfig;
 import top.wboost.common.system.code.SystemCode;
 import top.wboost.common.util.ReflectUtil;
 import top.wboost.common.utils.web.interfaces.context.EzWebApplicationListener;
+import top.wboost.common.utils.web.utils.JSONConfig;
+import top.wboost.common.utils.web.utils.JSONObjectUtil;
 import top.wboost.common.utils.web.utils.SpringBeanUtil;
 
 @RestController
 @RequestMapping("/webmvc/mapping")
+@ApiIgnore
 public class AutoMappingFindController implements InitializingBean, EzWebApplicationListener {
 
     @Autowired
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
+    private Swagger2Controller swCon;
 
     private MultiValueMap<String, RequestMappingInfo> urlLookup;
     private Map<RequestMappingInfo, HandlerMethod> mappingLookup;
 
     private static ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
-
+    ObjectMapper objectMapper = null;
+    private String hostNameOverride = null;
+    private DocumentationCache documentationCache = null;
+    private ServiceModelToSwagger2Mapper mapper = null;
+    private JsonSerializer jsonSerializer = null;
     HandlerMethod method = null;
+    Method componentsFromMethod = ReflectUtil.findMethod(HostNameProvider.class, "componentsFrom",
+            HttpServletRequest.class, String.class);
     Object handler = null;
+    JSONConfig jsonConfig = new JSONConfig();
+
+    {
+        componentsFromMethod.setAccessible(true);
+        jsonConfig.setDisableCircularReferenceDetect(true);
+    }
 
     @GetMapping
     @Explain(value = "查询所有接口")
@@ -78,8 +108,9 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
         ResponseEntity<Json> response = null;
         JSONObject json = null;
         try {
-            response = (ResponseEntity<Json>) method.getMethod().invoke(handler, swaggerGroup, servletRequest);
-            json = JSONObject.parseObject(response.getBody().value());
+            Swagger swagger = getDocumentation(swaggerGroup, servletRequest);
+            json = JSONObject.parseObject(JSONObjectUtil.toJSONString(swagger, jsonConfig, "vendorExtensions",
+                    "operations", "operationMap", "empty"));
             json.getJSONObject("paths").forEach((path, jo) -> {
                 JSONObject paths = (JSONObject) jo;
                 List<RequestMappingInfo> infos = urlLookup.get(path);
@@ -247,10 +278,49 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
         }
     }
 
+    public Swagger getDocumentation(@RequestParam(value = "group", required = false) String swaggerGroup,
+            HttpServletRequest servletRequest) {
+        try {
+            String groupName = Optional.fromNullable(swaggerGroup).or(Docket.DEFAULT_GROUP_NAME);
+            Documentation documentation = documentationCache.documentationByGroup(groupName);
+            if (documentation == null) {
+                return null;
+            }
+            Swagger swagger = mapper.mapDocumentation(documentation);
+            UriComponents uriComponents = (UriComponents) componentsFromMethod.invoke(null, servletRequest,
+                    swagger.getBasePath());
+            swagger.basePath(Strings.isNullOrEmpty(uriComponents.getPath()) ? "/" : uriComponents.getPath());
+            if (Strings.isNullOrEmpty(swagger.getHost())) {
+                swagger.host(hostName(uriComponents));
+            }
+            return swagger;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String hostName(UriComponents uriComponents) {
+        if ("DEFAULT".equals(hostNameOverride)) {
+            String host = uriComponents.getHost();
+            int port = uriComponents.getPort();
+            if (port > -1) {
+                return String.format("%s:%d", host, port);
+            }
+            return host;
+        }
+        return hostNameOverride;
+    }
+
     Object mappingRegistry = null;
+    boolean init = false;
 
     @Override
     public void onWebApplicationEvent(ContextRefreshedEvent event) {
+        if (init) {
+            return;
+        }
+        init = true;
         try {
             PropertySourcedRequestMappingHandlerMapping p = SpringBeanUtil
                     .getBean(PropertySourcedRequestMappingHandlerMapping.class);
@@ -263,9 +333,15 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
             Field handlerField = ReflectUtil.findField(PropertySourcedRequestMappingHandlerMapping.class, "handler");
             handlerField.setAccessible(true);
             this.handler = handlerField.get(p);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+            this.swCon = (Swagger2Controller) this.method.getBean();
+            this.jsonSerializer = ReflectUtil.getFieldValue(this.swCon, "jsonSerializer", JsonSerializer.class);
+            this.hostNameOverride = ReflectUtil.getFieldValue(this.swCon, "hostNameOverride", String.class);
+            this.documentationCache = ReflectUtil.getFieldValue(this.swCon, "documentationCache",
+                    DocumentationCache.class);
+            this.mapper = ReflectUtil.getFieldValue(this.swCon, "mapper", ServiceModelToSwagger2Mapper.class);
+            this.hostNameOverride = ReflectUtil.getFieldValue(this.swCon, "hostNameOverride", String.class);
+            this.objectMapper = ReflectUtil.getFieldValue(jsonSerializer, "objectMapper", ObjectMapper.class);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
