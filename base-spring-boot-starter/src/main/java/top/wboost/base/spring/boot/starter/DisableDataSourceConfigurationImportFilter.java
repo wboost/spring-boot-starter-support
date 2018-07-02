@@ -12,6 +12,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 
+import top.wboost.base.spring.boot.starter.util.SpringBootUtil;
+import top.wboost.common.log.entity.Logger;
+import top.wboost.common.log.util.LoggerUtil;
+
 /**
  * 配置禁用数据层
  * @className DisableDataSourceConfigurationImportFilter
@@ -22,21 +26,21 @@ import org.springframework.core.annotation.Order;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class DisableDataSourceConfigurationImportFilter implements AutoConfigurationImportFilter {
 
+    private Logger log = LoggerUtil.getLogger(getClass());
+
     @Override
     public boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata) {
         Set<String> excludes = new HashSet<>();
         try {
-            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-            StackTraceElement element = stackTraceElements[stackTraceElements.length - 1];
-            String bootRunName = element.getClassName();
-            Class<?> clazz = Class.forName(bootRunName);
+            Class<?> clazz = SpringBootUtil.getLauncherClass();
+            log.info("get boot class {}", clazz);
             DisableDataSource disableDataSource = AnnotationUtils.findAnnotation(clazz, DisableDataSource.class);
             if (disableDataSource != null) {
                 excludes.add(DataSourceAutoConfiguration.class.getName());
                 excludes.add(DataSourceTransactionManagerAutoConfiguration.class.getName());
                 excludes.add(HibernateJpaAutoConfiguration.class.getName());
             }
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         boolean[] match = new boolean[autoConfigurationClasses.length];

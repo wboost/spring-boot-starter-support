@@ -13,6 +13,8 @@ import org.springframework.core.annotation.Order;
 
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 
+import top.wboost.base.spring.boot.starter.util.SpringBootUtil;
+
 /**
  * 配置使用JPA或MYBATIS
  * @className OrmChooseAutoConfigurationImportFilter
@@ -27,17 +29,14 @@ public class OrmChooseAutoConfigurationImportFilter implements AutoConfiguration
     public boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata) {
         Set<String> excludes = new HashSet<>();
         try {
-            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-            StackTraceElement element = stackTraceElements[stackTraceElements.length - 1];
-            String bootRunName = element.getClassName();
-            Class<?> clazz = Class.forName(bootRunName);
+            Class<?> clazz = SpringBootUtil.getLauncherClass();
             EnableJpa enableJpa = AnnotationUtils.findAnnotation(clazz, EnableJpa.class);
             if (enableJpa == null) {
                 excludes.add(HibernateJpaAutoConfiguration.class.getName());
                 excludes.add(JpaRepositoriesAutoConfiguration.class.getName());
             }
             excludes.add(DruidDataSourceAutoConfigure.class.getName());
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         boolean[] match = new boolean[autoConfigurationClasses.length];
