@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import io.swagger.annotations.ApiParam;
 import springfox.documentation.service.ResolvedMethodParameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.ParameterBuilderPlugin;
 import springfox.documentation.spi.service.contexts.ParameterContext;
 import top.wboost.common.base.annotation.AutoWebApplicationConfig;
+import top.wboost.common.util.StringUtil;
 
 /**
  * 配置使用ApiParam注解时的默认类型 (使用common.swagger.defaultApiParamType指定")
@@ -50,6 +52,12 @@ public class ParameterTypeResolverBuilderPlugin implements ParameterBuilderPlugi
                     parameterContext.parameterBuilder().required(true);
                 }
                 break;
+            }
+            if (type == ApiParam.class) {
+                ApiParam api = (ApiParam) annotation;
+                if (StringUtil.notEmpty(api.type())) {
+                    isChoose = true;
+                }
             }
         }
         if (!isChoose && swaggerProperties.getDefaultApiParamType() != null) {
