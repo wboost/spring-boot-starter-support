@@ -39,6 +39,7 @@ public class DisableDataSourceConfigurationImportFilter implements AutoConfigura
                 excludes.add(DataSourceAutoConfiguration.class.getName());
                 excludes.add(DataSourceTransactionManagerAutoConfiguration.class.getName());
                 excludes.add(HibernateJpaAutoConfiguration.class.getName());
+                //DataSourceAutoMultipleConfigurationBean
             }
         } catch (Exception e) {
             e.printStackTrace();
