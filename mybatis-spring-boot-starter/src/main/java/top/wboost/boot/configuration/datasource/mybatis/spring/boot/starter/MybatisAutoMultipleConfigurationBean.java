@@ -123,7 +123,7 @@ public class MybatisAutoMultipleConfigurationBean {
         }
         String[] dataSources = this.beanFactory.getBeanNamesForType(DataSource.class, true, false);
         Set<String> dsNames = new HashSet<String>(Arrays.asList(dataSources));
-        Set<String> dsAndAliasNames = new HashSet<String>(Arrays.asList(dataSources));
+        Set<String> dsAndAliasNames = new HashSet<>(Arrays.asList(dataSources));
         dsAndAliasNames.addAll(dsNames);
         dsNames.forEach(dsName -> {
             String[] alias = this.beanFactory.getAliases(dsName);
