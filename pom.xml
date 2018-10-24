@@ -26,10 +26,10 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git@github.com:wboost/common.git</connection>
-        <developerConnection>scm:git:git@github.com:wboost/common.git</developerConnection>
-        <url>https://github.com/wboost/common</url>
-      	<tag>common</tag>
+        <connection>scm:git:git@github.com:wboost/spring-boot-starter-support.git</connection>
+        <developerConnection>scm:git:git@github.com:wboost/spring-boot-starter-support.git</developerConnection>
+        <url>https://github.com/wboost/spring-boot-starter-support</url>
+      	<tag>spring-boot-starter-support</tag>
   	</scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
