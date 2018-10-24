@@ -12,8 +12,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
-
-import top.wboost.base.spring.boot.starter.util.SpringBootUtil;
+import top.wboost.common.boot.util.SpringBootUtil;
 
 /**
  * 配置使用JPA或MYBATIS

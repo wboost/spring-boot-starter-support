@@ -12,7 +12,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 
-import top.wboost.base.spring.boot.starter.util.SpringBootUtil;
+import top.wboost.common.boot.util.SpringBootUtil;
 import top.wboost.common.log.entity.Logger;
 import top.wboost.common.log.util.LoggerUtil;
 
