@@ -1,5 +1,6 @@
 package top.wboost.base.spring.boot.starter;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +67,7 @@ public class CustomerPropertiesTreeUtil {
                 resolvers.put(dsName, CopyUtil.copyBean(clazz, prop, filterName));
             }
             Method dsPropMethod = ReflectUtil.getWriteMethod(clazz, dsValue);
+            Field dsPropField = ReflectUtil.findField(clazz, dsValue);
             if (dsPropMethod != null) {
                 Class<?> parameterType = dsPropMethod.getParameterTypes()[0];
                 if (parameterType.isArray()) {

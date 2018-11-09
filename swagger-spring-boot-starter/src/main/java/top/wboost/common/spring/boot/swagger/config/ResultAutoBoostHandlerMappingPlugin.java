@@ -1,21 +1,12 @@
 package top.wboost.common.spring.boot.swagger.config;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.fasterxml.classmate.TypeResolver;
+import com.google.common.collect.Sets;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import com.fasterxml.classmate.TypeResolver;
-import com.google.common.collect.Sets;
-
 import springfox.documentation.builders.OperationBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.ResponseMessageBuilder;
@@ -30,10 +21,17 @@ import springfox.documentation.spring.web.readers.operation.CachingOperationName
 import springfox.documentation.spring.web.readers.parameter.ExpansionContext;
 import springfox.documentation.spring.web.readers.parameter.ModelAttributeParameterExpander;
 import top.wboost.common.annotation.Explain;
+import top.wboost.common.base.annotation.AutoWebApplicationConfig;
 import top.wboost.common.base.restful.AutoRequestMehthodType;
 import top.wboost.common.base.restful.AutoRequestMethod;
 import top.wboost.common.base.restful.AutoRequestMethodInvoke;
 import top.wboost.common.spring.boot.swagger.template.QueryPageTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 增加 @EnableBaseRestful 注解新增的各种接口
@@ -42,7 +40,7 @@ import top.wboost.common.spring.boot.swagger.template.QueryPageTemplate;
  * @date 2018年5月24日 下午5:12:40
  * @version 1.0.0
  */
-@Component
+@AutoWebApplicationConfig
 @Order(Ordered.HIGHEST_PRECEDENCE - 10)
 public class ResultAutoBoostHandlerMappingPlugin implements ApiListingScannerPlugin {
 
