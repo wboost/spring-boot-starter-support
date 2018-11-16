@@ -9,6 +9,7 @@ import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.env.PropertySourcesLoader;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -19,6 +20,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import top.wboost.common.base.entity.HttpRequestBuilder;
+import top.wboost.common.exception.BusinessCodeException;
 import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.util.HttpClientUtil;
 
@@ -40,6 +42,16 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+        EnableConfigClient enableConfigClient = null;
+        for (Object source : application.getSources()) {
+            enableConfigClient = AnnotationUtils.getAnnotation(source instanceof java.lang.Class ? (java.lang.Class) source : source.getClass(), EnableConfigClient.class);
+            if (enableConfigClient != null)
+                break;
+        }
+
+        if (enableConfigClient == null) {
+            return;
+        }
         StandardEnvironment environmentInit = new StandardEnvironment();
         environmentInit.merge(environment);
         try {
@@ -54,12 +66,13 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         String serverId = environmentInit.getProperty("common.config.client.server-id");
         String serverAddr = environmentInit.getProperty("common.config.client.server-addr");
         String applicationName = environmentInit.getProperty("spring.application.name");
-        FetchConfigProcessor fetchConfigProcessor = new FetchConfigProcessor();
+        SimpleFetchConfigProcessor fetchConfigProcessor = new SimpleFetchConfigProcessor();
         fetchConfigProcessor.setServerId(serverId);
         fetchConfigProcessor.setServerAddr(serverAddr);
         fetchConfigProcessor.setApplicationName(applicationName);
         fetchConfigProcessor.setProfiles(environmentInit.getActiveProfiles());
-        List<PropertySource> environmentFetch = fetchConfigProcessor.fetchConfig();
+        fetchConfigProcessor.registClient();
+        List<PropertySource<?>> environmentFetch = fetchConfigProcessor.fetchConfig();
         environmentFetch.forEach(propertySource -> environment.getPropertySources().addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, propertySource));
         System.out.println("postProcessEnvironment");
     }
@@ -70,7 +83,7 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
     }
 
     @Data
-    class FetchConfigProcessor {
+    class SimpleFetchConfigProcessor implements FetchConfigProcessor {
         private String serverAddr;
 
         private String serverId;
@@ -81,8 +94,32 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
 
         private final String requestMappingPrefix = "/fetch";
 
-        public List<PropertySource> fetchConfig() {
-            List<PropertySource> environmentList = new ArrayList<>();
+        class FetchConfigProcessorException extends BusinessCodeException {
+
+            public FetchConfigProcessorException(String message) {
+                super(0, message);
+            }
+
+            public FetchConfigProcessorException(String message, Exception e) {
+                super(0, message, e);
+            }
+        }
+
+        @Override
+        public void registClient() {
+            String url = serverAddr + "/register/hello/" + applicationName;
+            try {
+                ResponseEntity<String> profiles = HttpClientUtil.execute(HttpRequestBuilder.get(url));
+                if (profiles.getStatusCode() != HttpStatus.OK) {
+                    throw new FetchConfigProcessorException("register client error." + profiles.getStatusCode().toString());
+                }
+            } catch (Exception e) {
+                throw new FetchConfigProcessorException("register client error.", e);
+            }
+        }
+
+        public List<PropertySource<?>> fetchConfig() {
+            List<PropertySource<?>> environmentList = new ArrayList<>();
             environmentList.add(fetchPublic());
             environmentList.addAll(fetchOwnByProfile());
             return environmentList;
