@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>top.wboost</groupId>
@@ -109,20 +110,22 @@
         
         <profile>
         	<id>chinaoly</id>
-        	<distributionManagement>
-				<snapshotRepository>
-					<id>nexus2</id>
-					<name>common-manager</name>
-					<url>http://192.168.16.181:8081/repository/chinaoly/</url>
-					<uniqueVersion>true</uniqueVersion>
-				</snapshotRepository>
-		
-				<repository>
-					<id>nexus2</id>
-					<name>User Porject Release</name>
-					<url>http://192.168.16.181:8081/repository/chinaoly/</url>
-				</repository>
-			</distributionManagement>
+            <distributionManagement>
+                <repository>
+                    <id>releases</id>
+                    <name>ChinaolyReleases</name>
+                    <url>
+                        http://192.168.3.189/nexus/content/repositories/releases/
+                    </url>
+                </repository>
+                <snapshotRepository>
+                    <id>snapshots</id>
+                    <name>ChinaolySnapshots</name>
+                    <url>
+                        http://192.168.3.189/nexus/content/repositories/snapshots/
+                    </url>
+                </snapshotRepository>
+            </distributionManagement>
         </profile>
 	</profiles>
 	
