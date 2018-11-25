@@ -2,18 +2,21 @@ package top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.trans
 
 import lombok.Data;
 import org.slf4j.Logger;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.beans.factory.support.*;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.interceptor.*;
 import org.springframework.util.StringUtils;
+import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.GlobalForDataSourceBootStarter;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.util.TransactionBeanNameGeneratorUtil;
 import top.wboost.common.boot.util.SpringBootUtil;
 import top.wboost.common.log.util.LoggerUtil;
@@ -30,9 +33,8 @@ import java.util.List;
  * 注册事物管理拦截器，创建全局拦截,与tx:method标签相同功能
  */
 @Configuration
-@ConditionalOnClass(DataSourceTransactionManager.class)
-@AutoConfigureAfter(DataSourceMultipleTransactionManagerAutoConfiguration.class)
-public class TransactionInterceptorConfiguration implements ImportBeanDefinitionRegistrar {
+@ConditionalOnClass(PlatformTransactionManager.class)
+public class TransactionInterceptorConfiguration implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
     BeanFactoryPointcutAdvisorConfiguration beanFactoryPointcutAdvisorConfiguration = new BeanFactoryPointcutAdvisorConfiguration();
     private TransactionConfig transactionConfig;
@@ -93,7 +95,7 @@ public class TransactionInterceptorConfiguration implements ImportBeanDefinition
     private String generatorTransactionInterceptorBeanName(EnableTransactionInterceptors.Config transactionInterceptorConfig) {
         String transactionInterceptorBeanName = transactionInterceptorConfig.name();
         if (!StringUtil.notEmpty(transactionInterceptorBeanName)) {
-            transactionInterceptorBeanName = "transactionInterceptor#" + DataSourceMultipleTransactionManagerAutoConfiguration.PRIMARYT_RANSACTION_MANAGER;
+            transactionInterceptorBeanName = "transactionInterceptor#" + GlobalForDataSourceBootStarter.PRIMARYT_TRANSACTION_MANAGER;
         }
         return transactionInterceptorBeanName;
     }
@@ -136,9 +138,10 @@ public class TransactionInterceptorConfiguration implements ImportBeanDefinition
         if (!StringUtil.notEmpty(transactionManagerRef)) {
             String datasourceRef = transactionInterceptorConfig.datasourceRef();
             if (StringUtil.notEmpty(datasourceRef)) {
+                //TODO 获得事物管理器名
                 transactionManagerRef = TransactionBeanNameGeneratorUtil.generatorTransactionManagerName(datasourceRef);
             } else {
-                transactionManagerRef = DataSourceMultipleTransactionManagerAutoConfiguration.PRIMARYT_RANSACTION_MANAGER;
+                transactionManagerRef = GlobalForDataSourceBootStarter.PRIMARYT_TRANSACTION_MANAGER;
             }
         }
         logger.info("transactionInterceptorConfig {} use transactionManagerRef {}",generatorTransactionInterceptorBeanName(transactionInterceptorConfig), transactionManagerRef);
@@ -230,6 +233,11 @@ public class TransactionInterceptorConfiguration implements ImportBeanDefinition
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         this.beanNameGenerator = (BeanNameGenerator) ((DefaultListableBeanFactory) registry).getBean("configAnnotationBeanNameGenerator");
         getTransactionConfig(registry);
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        System.out.println("sad");
     }
 
 

@@ -1,4 +1,4 @@
-package top.wboost.boot.configuration.datasource.spring.boot.autoconfigure;
+package top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.datasource;
 
 /*@org.springframework.context.annotation.Configuration
 @EnableConfigurationProperties(DataSourceWrapper.class)

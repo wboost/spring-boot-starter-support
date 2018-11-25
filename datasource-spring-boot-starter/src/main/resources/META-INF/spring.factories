@@ -3,6 +3,7 @@ org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
 top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.OrmChooseAutoConfigurationImportFilter
 
 #AutoConfiguration
+# top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.DataSourceMultipleAutoConfiguration,\
+# top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.transaction.DataSourceMultipleTransactionManagerAutoConfiguration
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.DataSourceMultipleAutoConfiguration,\
-top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.transaction.DataSourceMultipleTransactionManagerAutoConfiguration
+top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.JdbcAutoConfiguration

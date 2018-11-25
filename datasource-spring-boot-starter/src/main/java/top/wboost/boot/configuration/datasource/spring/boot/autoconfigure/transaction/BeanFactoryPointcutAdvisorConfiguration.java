@@ -7,7 +7,7 @@ import org.springframework.beans.factory.config.RuntimeBeanNameReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 import top.wboost.common.system.code.SystemCode;
 import top.wboost.common.system.exception.SystemCodeException;
@@ -47,12 +47,13 @@ public class BeanFactoryPointcutAdvisorConfiguration {
     }
 
     public static class InterceptorDefaultBeanFactoryPointcutAdvisor extends DefaultBeanFactoryPointcutAdvisor {
-        private List<DataSourceTransactionManager> platformTransactionManagers;
+        private List<PlatformTransactionManager> platformTransactionManagers;
         public InterceptorDefaultBeanFactoryPointcutAdvisor(
-        List<DataSourceTransactionManager> platformTransactionManagers){
+                List<PlatformTransactionManager> platformTransactionManagers) {
             this.platformTransactionManagers = platformTransactionManagers;
         }
-        public List<DataSourceTransactionManager> getPlatformTransactionManagers(){
+
+        public List<PlatformTransactionManager> getPlatformTransactionManagers() {
             return platformTransactionManagers;
         }
     }

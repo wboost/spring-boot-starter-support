@@ -1,8 +1,6 @@
 package top.wboost.boot.configuration.datasource.spring.boot.autoconfigure;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
@@ -10,9 +8,10 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
-
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import top.wboost.common.boot.util.SpringBootUtil;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 配置使用JPA或MYBATIS
@@ -33,6 +32,7 @@ public class OrmChooseAutoConfigurationImportFilter implements AutoConfiguration
             if (enableJpa == null) {
                 excludes.add(HibernateJpaAutoConfiguration.class.getName());
                 excludes.add(JpaRepositoriesAutoConfiguration.class.getName());
+                //excludes.add(JdbcAutoConfiguration.class.getName());
             }
             excludes.add(DruidDataSourceAutoConfigure.class.getName());
         } catch (Exception e) {
