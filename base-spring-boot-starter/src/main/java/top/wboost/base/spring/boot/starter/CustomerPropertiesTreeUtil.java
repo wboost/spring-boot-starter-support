@@ -1,18 +1,18 @@
 package top.wboost.base.spring.boot.starter;
 
-import java.lang.reflect.Field;
+import org.springframework.util.AntPathMatcher;
+import top.wboost.common.util.CopyUtil;
+import top.wboost.common.util.ReflectUtil;
+import top.wboost.common.util.StringUtil;
+import top.wboost.common.utils.web.utils.ConvertUtil;
+import top.wboost.common.utils.web.utils.PropertiesUtil;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import top.wboost.common.util.CopyUtil;
-import top.wboost.common.util.ReflectUtil;
-import top.wboost.common.util.StringUtil;
-import top.wboost.common.utils.web.utils.ConvertUtil;
-import top.wboost.common.utils.web.utils.PropertiesUtil;
 
 /**
  * 自定义配置文件树解析
@@ -23,24 +23,26 @@ import top.wboost.common.utils.web.utils.PropertiesUtil;
  */
 public class CustomerPropertiesTreeUtil {
 
+    private String[] s;
+
     /**
      * <pre>
-     * common: 
-          datasource: 
+     * common:
+     datasource:
             driver-class-name: oracle.jdbc.driver.OracleDriver
-            primary: 
+     primary:
               url: jdbc:oracle:thin:@192.168.1.225:1521:orcl
               username: trajx_dev
               password: trajx334
-            d1: 
+     d1:
               url: http
               username: name1
               password: password1
-            d2: 
+     d2:
               url: https
               username: name2
               password: password2
-        
+
         get Map <{primary,clazz}{d1,clazz},{d2,clazz}>
     </pre>
      * @param clazz
@@ -67,27 +69,55 @@ public class CustomerPropertiesTreeUtil {
                 resolvers.put(dsName, CopyUtil.copyBean(clazz, prop, filterName));
             }
             Method dsPropMethod = ReflectUtil.getWriteMethod(clazz, dsValue);
-            Field dsPropField = ReflectUtil.findField(clazz, dsValue);
-            if (dsPropMethod != null) {
-                Class<?> parameterType = dsPropMethod.getParameterTypes()[0];
-                if (parameterType.isArray()) {
-                    if (!value.getClass().isArray()) {
-                        value = new Object[] { value };
-                    }
-                    value = ConvertUtil.parseArraytoClassArray(value, parameterType.getComponentType());
-                }
-                Object param = value;
-                try {
-                    dsPropMethod.invoke(resolvers.get(dsName), param);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            setProp(dsPropMethod, resolvers.get(dsName), value);
         });
         if (resolvers.size() == 0) {
             resolvers.put(defaultName, prop);
         }
         return resolvers;
+    }
+
+    private static void setProp(Method dsPropMethod, Object obj, Object value) {
+        if (dsPropMethod != null) {
+            Class<?> parameterType = dsPropMethod.getParameterTypes()[0];
+            if (parameterType.isArray()) {
+                if (!value.getClass().isArray()) {
+                    value = new Object[]{value};
+                }
+                value = ConvertUtil.parseArraytoClassArray(value, parameterType.getComponentType());
+            } else {
+                value = warpType(value, parameterType.getComponentType());
+            }
+            Object param = value;
+            try {
+                dsPropMethod.invoke(obj, param);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static <T> Map<String, T> resolvePropertiesTree(Class<T> clazz, String prefix, String defaultName,
+                                                           String... filterName) {
+        Map<String, Object> resolveConfigs = PropertiesUtil.getPropertiesByPattern("^" + prefix.replaceAll("\\.", "\\\\.") + "\\.([^\\.]*?)$");
+        try {
+            T t = clazz.newInstance();
+            resolveConfigs.forEach((key, val) -> {
+                String fieldName = key.substring(prefix.length() + 1);
+                Method writeMethod = ReflectUtil.getWriteMethod(clazz, column2field(fieldName));
+                setProp(writeMethod, t, val);
+            });
+            return resolvePropertiesTree(clazz, t, prefix, defaultName, filterName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Object warpType(Object value, Class<?> componentType) {
+        if (componentType == java.lang.String.class) {
+            return value.toString();
+        }
+        return value;
     }
 
     private static void converterArray(Map<String, Object> configs) {
@@ -104,9 +134,7 @@ public class CustomerPropertiesTreeUtil {
             }
         }
         map.forEach((propName, indexList) -> {
-            indexList.sort(((l, r) -> {
-                return l - r;
-            }));
+            indexList.sort((l, r) -> l - r);
             List<Object> list = new ArrayList<>();
             indexList.forEach(index -> {
                 list.add(configs.get(propName + "[" + index + "]"));
@@ -140,19 +168,10 @@ public class CustomerPropertiesTreeUtil {
         return sb.toString();
     }
 
-    private String[] s;
-
-    public String[] getS() {
-        return s;
-    }
-
-    public void setS(String[] s) {
-        this.s = s;
-    }
-
     public static void main(String[] args) throws NoSuchFieldException, SecurityException {
-        System.out.println(ReflectUtil.getWriteMethod(CustomerPropertiesTreeUtil.class, "s").getParameterTypes()[0]
-                .getComponentType());
+        AntPathMatcher antPathMatcher = new AntPathMatcher();
+        System.out.println(antPathMatcher.match("common.jdbc.*.a", "common.jdbc.a"));
+
 
     }
 

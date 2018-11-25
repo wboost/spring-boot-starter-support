@@ -1,38 +1,16 @@
 package top.wboost.boot.configuration.datasource.spring.boot.autoconfigure;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.sql.DataSource;
-
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
-
-import top.wboost.base.spring.boot.starter.CustomerPropertiesTreeUtil;
-import top.wboost.common.log.util.LoggerUtil;
-import top.wboost.common.utils.web.utils.ConvertUtil;
-import top.wboost.common.utils.web.utils.SpringBeanRegisterUtil;
-
-@org.springframework.context.annotation.Configuration
+/*@org.springframework.context.annotation.Configuration
 @EnableConfigurationProperties(DataSourceWrapper.class)
-@AutoConfigureBefore(DruidDataSourceAutoConfigure.class)
+@AutoConfigureBefore(DruidDataSourceAutoConfigure.class)*/
 public class DataSourceAutoMultipleConfigurationBean {
+/*
 
+    public static final String DATASOURCE_WAPPERS = "DATASOURCE_WAPPERS_BEAN";
     @Autowired
     DataSourceWrapper DataSourceWrapper;
     @Autowired
     DefaultListableBeanFactory beanFactory;
-
     Logger log = LoggerUtil.getLogger(DataSourceAutoMultipleConfigurationBean.class);
 
     public DataSource initConfig() {
@@ -43,6 +21,8 @@ public class DataSourceAutoMultipleConfigurationBean {
         Map<String, DataSourceWrapper> dataSources = CustomerPropertiesTreeUtil.resolvePropertiesTree(
                 DataSourceWrapper.class, DataSourceWrapper, "common.datasource", "primary", "url", "username",
                 "password");
+
+        beanFactory.registerSingleton(DATASOURCE_WAPPERS, dataSources);
 
         DataSourceWrapper primaryDataSourceWrapper;
         List<Entry<String, DataSourceWrapper>> list = new ArrayList<Entry<String, DataSourceWrapper>>(
@@ -79,5 +59,6 @@ public class DataSourceAutoMultipleConfigurationBean {
         }
         return beanFactory.getBean(GlobalForDataSourceBootStarter.PRIMARY_DATASOURCE_NAME, DataSource.class);
     }
+*/
 
 }
