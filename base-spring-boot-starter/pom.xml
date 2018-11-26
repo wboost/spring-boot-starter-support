@@ -1,18 +1,19 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>top.wboost</groupId>
     <artifactId>spring-boot-starter-support</artifactId>
-    <version>3.1.4-SNAPSHOT</version>
+      <version>3.1.4.RELEASE</version>
   </parent>
   <artifactId>base-spring-boot-starter</artifactId>
   <name>base-spring-boot-starter</name>
   <properties>
   		<!-- chinaoly -->
 		<project-group-id>top.wboost</project-group-id>
-		<project-group-version>3.1.4-SNAPSHOT</project-group-version>
+      <project-group-version>3.1.4.RELEASE</project-group-version>
 		<!-- /chinaoly -->
 
 		<!-- config -->
