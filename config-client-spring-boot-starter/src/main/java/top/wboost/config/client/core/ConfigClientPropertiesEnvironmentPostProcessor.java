@@ -34,9 +34,9 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
 
     //优先于ConfigFileApplicationListener
     public static final int DEFAULT_ORDER = ConfigFileApplicationListener.DEFAULT_ORDER - 2;
+    private final String[] resources = new String[]{"classpath:/bootstrap.yml", "classpath:/application.yml"};
     private PropertySourcesLoader propertySourcesLoader = new PropertySourcesLoader();
     private ResourceLoader resourceLoader = new DefaultResourceLoader();
-    private final String[] resources = new String[]{"classpath:/bootstrap.yml","classpath:/application.yml"};
     private Logger logger = LoggerUtil.getLogger(ConfigClientPropertiesEnvironmentPostProcessor.class);
 
 
@@ -58,7 +58,9 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
             for (String resource : Arrays.asList(resources)) {
                 Resource bootstrapResource = this.resourceLoader.getResource(resource);
                 PropertySource<?> load = propertySourcesLoader.load(bootstrapResource, "applicationConfig: [profile=]", "wboostConfigClient: [" + resource + "]", null);
-                environmentInit.getPropertySources().addLast(load);
+                if (load != null) {
+                    environmentInit.getPropertySources().addLast(load);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,10 +73,12 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         fetchConfigProcessor.setServerAddr(serverAddr);
         fetchConfigProcessor.setApplicationName(applicationName);
         fetchConfigProcessor.setProfiles(environmentInit.getActiveProfiles());
-        fetchConfigProcessor.registClient();
         List<PropertySource<?>> environmentFetch = fetchConfigProcessor.fetchConfig();
+        System.out.println(JSONObject.toJSONString(environmentFetch));
         environmentFetch.forEach(propertySource -> environment.getPropertySources().addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, propertySource));
         System.out.println("postProcessEnvironment");
+        fetchConfigProcessor.registerClient(environment);
+        System.out.println("registerClient");
     }
 
     @Override
@@ -84,32 +88,17 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
 
     @Data
     class SimpleFetchConfigProcessor implements FetchConfigProcessor {
+        private final String requestMappingPrefix = "/fetch";
         private String serverAddr;
-
         private String serverId;
-
         private String applicationName;
-
         private String[] profiles;
 
-        private final String requestMappingPrefix = "/fetch";
-
-        class FetchConfigProcessorException extends BusinessCodeException {
-
-            public FetchConfigProcessorException(String message) {
-                super(0, message);
-            }
-
-            public FetchConfigProcessorException(String message, Exception e) {
-                super(0, message, e);
-            }
-        }
-
         @Override
-        public void registClient() {
+        public void registerClient(ConfigurableEnvironment environment) {
             String url = serverAddr + "/register/hello/" + applicationName;
             try {
-                ResponseEntity<String> profiles = HttpClientUtil.execute(HttpRequestBuilder.get(url));
+                ResponseEntity<String> profiles = HttpClientUtil.execute(HttpRequestBuilder.post(url).addParameter("port", environment.getProperty("server.port")));
                 if (profiles.getStatusCode() != HttpStatus.OK) {
                     throw new FetchConfigProcessorException("register client error." + profiles.getStatusCode().toString());
                 }
@@ -147,7 +136,7 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         }
 
         public List<PropertySource<?>> fetchOwnByProfile() {
-            String url = serverAddr + "/" + applicationName + "/";
+            String url = serverAddr + "/config/" + applicationName + "/";
             List<PropertySource<?>> sources = new ArrayList<>();
             try {
                 for (String profile : Arrays.asList(profiles)) {
@@ -165,6 +154,17 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
                 logger.error("fetchOwnByProfile error.",e);
             }
             return sources;
+        }
+
+        class FetchConfigProcessorException extends BusinessCodeException {
+
+            public FetchConfigProcessorException(String message) {
+                super(0, message);
+            }
+
+            public FetchConfigProcessorException(String message, Exception e) {
+                super(0, message, e);
+            }
         }
     }
 }
