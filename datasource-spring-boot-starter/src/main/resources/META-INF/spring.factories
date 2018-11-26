@@ -6,4 +6,5 @@ top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.OrmChooseAuto
 # top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.DataSourceMultipleAutoConfiguration,\
 # top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.transaction.DataSourceMultipleTransactionManagerAutoConfiguration
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.JdbcAutoConfiguration
+top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.JdbcAutoConfiguration,\
+top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.jpa.EntityManagerRegister
