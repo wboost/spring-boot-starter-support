@@ -5,16 +5,11 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.*;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import top.wboost.base.spring.boot.starter.Condition.ConditionalHasPropertyPrefix;
 import top.wboost.base.spring.boot.starter.CustomerPropertiesTreeUtil;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.GlobalForDataSourceBootStarter;
 import top.wboost.common.util.StringUtil;
@@ -27,8 +22,6 @@ import java.util.Map;
  * @Auther: jwsun
  * @Date: 2018/11/20 21:16
  */
-@Configuration
-@ConditionalHasPropertyPrefix(prefix = GlobalForDataSourceBootStarter.PROPERTIES_JDBC + ".jpa.entityManagerFactory")
 public class EntityManagerRegister implements ImportBeanDefinitionRegistrar {
 
     Map<String, EntityManagerFactoryProperties> entityManagerFactoryPropertiesMap;
@@ -39,6 +32,8 @@ public class EntityManagerRegister implements ImportBeanDefinitionRegistrar {
         this.registry = registry;
         this.entityManagerFactoryPropertiesMap = CustomerPropertiesTreeUtil.resolvePropertiesTree(
                 EntityManagerFactoryProperties.class, GlobalForDataSourceBootStarter.PROPERTIES_JDBC + ".jpa.entityManagerFactory", "entityManagerFactory");
+
+        registry.registerBeanDefinition(EntityManagerBeanDefinitionRegistrarPostProcessor.class.getName(), new RootBeanDefinition(EntityManagerBeanDefinitionRegistrarPostProcessor.class));
         initConfig();
     }
 
@@ -67,8 +62,7 @@ public class EntityManagerRegister implements ImportBeanDefinitionRegistrar {
         private BeanFactory beanFactory;
         private EntityManagerFactory entityManagerFactory;
 
-        public EntityManagerFactoryFactoryBean(EntityManagerFactoryBuilder entityManagerFactoryBuilder) {
-            this.entityManagerFactoryBuilder = entityManagerFactoryBuilder;
+        public EntityManagerFactoryFactoryBean() {
         }
 
         @Override
@@ -89,6 +83,7 @@ public class EntityManagerRegister implements ImportBeanDefinitionRegistrar {
         @Override
         public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
             this.beanFactory = beanFactory;
+            this.entityManagerFactoryBuilder = beanFactory.getBean(EntityManagerFactoryBuilder.class);
             LocalContainerEntityManagerFactoryBean build = entityManagerFactoryBuilder.dataSource(dataSource).packages(entityManagerFactoryProperties.getEntityPackages()).build();
             String beanName = entityManagerFactoryProperties.getName() + "FACTORY";
             System.out.println(beanName);

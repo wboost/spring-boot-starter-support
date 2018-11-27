@@ -12,6 +12,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import top.wboost.base.spring.boot.starter.Condition.ConditionalHasPropertyPrefix;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.datasource.DataSourceWrapper;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.datasource.DataSourcesRegister;
+import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.jpa.EntityManagerFactoryProperties;
+import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.jpa.EntityManagerRegister;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.transaction.TransactionsRegister;
 
 import static top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.GlobalForDataSourceBootStarter.PROPERTIES_JDBC;
@@ -42,6 +44,16 @@ public class JdbcAutoConfiguration {
     @EnableConfigurationProperties(DataSourceWrapper.class)
     static class DataSourcesAutoConfiguration {
         public DataSourcesAutoConfiguration() {
+
+        }
+    }
+
+    @Configuration
+    @ConditionalHasPropertyPrefix(prefix = PROPERTIES_JDBC + ".jpa.entityManagerFactory")
+    @Import(EntityManagerRegister.class)
+    @EnableConfigurationProperties(EntityManagerFactoryProperties.class)
+    static class EntityManagerRegisterConfiguration {
+        public EntityManagerRegisterConfiguration() {
 
         }
     }
