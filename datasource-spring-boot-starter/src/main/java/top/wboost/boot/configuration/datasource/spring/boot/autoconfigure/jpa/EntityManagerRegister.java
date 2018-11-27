@@ -1,6 +1,7 @@
 package top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.jpa;
 
 import lombok.Data;
+import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -12,6 +13,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import top.wboost.base.spring.boot.starter.CustomerPropertiesTreeUtil;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.GlobalForDataSourceBootStarter;
+import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.util.StringUtil;
 
 import javax.persistence.EntityManagerFactory;
@@ -26,6 +28,7 @@ public class EntityManagerRegister implements ImportBeanDefinitionRegistrar {
 
     Map<String, EntityManagerFactoryProperties> entityManagerFactoryPropertiesMap;
     private BeanDefinitionRegistry registry;
+    private Logger logger = LoggerUtil.getLogger(getClass());
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -42,6 +45,7 @@ public class EntityManagerRegister implements ImportBeanDefinitionRegistrar {
             if (!StringUtil.notEmpty(properties.getName())) {
                 properties.setName(name);
             }
+            logger.info("register EntityManagerFactory: {} for packages: {} and datasource {}", name, properties.getEntityPackages(), properties.getDatasource());
             BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(EntityManagerFactoryFactoryBean.class);
             beanDefinitionBuilder.addPropertyReference("dataSource", properties.getDatasource());
             beanDefinitionBuilder.addPropertyValue("entityManagerFactoryProperties", properties);

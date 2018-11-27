@@ -8,7 +8,8 @@
       <version>3.1.4.RELEASE</version>
   </parent>
   <packaging>pom</packaging>
-  <artifactId>spring-boot-starter-support</artifactId>
+    <version>3.1.4.1.RELEASE</version>
+    <artifactId>spring-boot-starter-support</artifactId>
   <name>spring-boot-starter-support</name>
   <description>project auto plugins for spring-boot</description>
 	<url>http://www.wboost.top</url>
