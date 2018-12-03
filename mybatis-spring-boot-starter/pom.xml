@@ -6,14 +6,14 @@
   <parent>
     <groupId>top.wboost</groupId>
     <artifactId>spring-boot-starter-support</artifactId>
-	  <version>3.1.4.1.RELEASE</version>
+	  <version>3.1.5-SNAPSHOT</version>
   </parent>
   <artifactId>mybatis-spring-boot-starter</artifactId>
   <name>mybatis-spring-boot-starter</name>
   <properties>
   		<!-- chinaoly -->
 		<project-group-id>top.wboost</project-group-id>
-	  <project-group-version>3.1.4.RELEASE</project-group-version>
+	  <project-group-version>3.1.5-SNAPSHOT</project-group-version>
 		<!-- /chinaoly -->
 
 		<!-- config -->

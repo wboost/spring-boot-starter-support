@@ -1,16 +1,12 @@
 package top.wboost.common.spring.boot.webmvc;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import io.swagger.annotations.ApiParam;
+import io.swagger.models.Swagger;
+import lombok.Data;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -20,24 +16,11 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.UriComponents;
-
-import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
-
-import io.swagger.annotations.ApiParam;
-import io.swagger.models.Swagger;
-import lombok.Data;
 import springfox.documentation.annotations.ApiIgnore;
 import springfox.documentation.service.Documentation;
 import springfox.documentation.spring.web.DocumentationCache;
@@ -50,8 +33,8 @@ import springfox.documentation.swagger2.web.HostNameProvider;
 import springfox.documentation.swagger2.web.Swagger2Controller;
 import top.wboost.common.annotation.Explain;
 import top.wboost.common.base.entity.ResultEntity;
-import top.wboost.common.spring.boot.swagger.annotation.ApiVersion;
-import top.wboost.common.spring.boot.swagger.annotation.GlobalForApiConfig;
+import top.wboost.common.spring.boot.webmvc.annotation.ApiVersion;
+import top.wboost.common.spring.boot.webmvc.annotation.GlobalForApiConfig;
 import top.wboost.common.system.code.SystemCode;
 import top.wboost.common.util.ReflectUtil;
 import top.wboost.common.utils.web.interfaces.context.EzWebApplicationListener;
@@ -59,29 +42,35 @@ import top.wboost.common.utils.web.utils.JSONConfig;
 import top.wboost.common.utils.web.utils.JSONObjectUtil;
 import top.wboost.common.utils.web.utils.SpringBeanUtil;
 
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.Map.Entry;
+
 @RestController
 @RequestMapping("/webmvc/mapping")
 @ApiIgnore
 public class AutoMappingFindController implements InitializingBean, EzWebApplicationListener {
 
-    @Autowired
-    private RequestMappingHandlerMapping requestMappingHandlerMapping;
-    private Swagger2Controller swCon;
-
-    private MultiValueMap<String, RequestMappingInfo> urlLookup;
-    private Map<RequestMappingInfo, HandlerMethod> mappingLookup;
-
     private static ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
     ObjectMapper objectMapper = null;
-    private String hostNameOverride = null;
-    private DocumentationCache documentationCache = null;
-    private ServiceModelToSwagger2Mapper mapper = null;
-    private JsonSerializer jsonSerializer = null;
     HandlerMethod method = null;
     Method componentsFromMethod = ReflectUtil.findMethod(HostNameProvider.class, "componentsFrom",
             HttpServletRequest.class, String.class);
     Object handler = null;
     JSONConfig jsonConfig = new JSONConfig();
+    Object mappingRegistry = null;
+    boolean init = false;
+    @Autowired
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
+    private Swagger2Controller swCon;
+    private MultiValueMap<String, RequestMappingInfo> urlLookup;
+    private Map<RequestMappingInfo, HandlerMethod> mappingLookup;
+    private String hostNameOverride = null;
+    private DocumentationCache documentationCache = null;
+    private ServiceModelToSwagger2Mapper mapper = null;
+    private JsonSerializer jsonSerializer = null;
 
     {
         componentsFromMethod.setAccessible(true);
@@ -99,6 +88,16 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
         return ResultEntity.success(SystemCode.QUERY_OK).setData(result)
                 .setFilterNames("handlerMethod", "requestMappingInfo").build();
     }
+
+    /*@Data
+    public static class RequestMappingInfoSimple {
+        private ConsumesRequestCondition  consumesRequestCondition ;
+        private HeadersRequestCondition  headersRequestCondition ;
+        private RequestMethodsRequestCondition  methodsCondition ;
+        private ParamsRequestCondition paramsCondition;
+        private PatternsRequestCondition  patternsCondition;
+        private ProducesRequestCondition producesCondition;
+    }*/
 
     @SuppressWarnings("unchecked")
     @GetMapping("docs")
@@ -141,94 +140,6 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
             e.printStackTrace();
         }
         return ResultEntity.success(SystemCode.QUERY_OK).setData(json).build();
-    }
-
-    @Data
-    public static class ReturnInfo {
-        RequestMappingInfo requestMappingInfo;
-        Map<String, Object> requestMappingInfoSimple = new HashMap<>();
-        HandlerMethod handlerMethod;
-        /**parameterName:java.lang.String**/
-        List<ParameterInfo> parameterTypes = new ArrayList<>();
-        String returnType;
-        String methodName;
-        String version;
-
-        public ReturnInfo(RequestMappingInfo requestMappingInfo, HandlerMethod handlerMethod) {
-            super();
-            this.requestMappingInfo = requestMappingInfo;
-            if (!requestMappingInfo.getConsumesCondition().isEmpty()) {
-                requestMappingInfoSimple.put("consumesCondition", requestMappingInfo.getConsumesCondition());
-            }
-            if (!requestMappingInfo.getHeadersCondition().isEmpty()) {
-                requestMappingInfoSimple.put("headersCondition", requestMappingInfo.getHeadersCondition());
-            }
-            if (!requestMappingInfo.getMethodsCondition().isEmpty()) {
-                requestMappingInfoSimple.put("methodsCondition", requestMappingInfo.getMethodsCondition());
-            }
-            if (!requestMappingInfo.getParamsCondition().isEmpty()) {
-                requestMappingInfoSimple.put("paramsCondition", requestMappingInfo.getParamsCondition());
-            }
-            if (!requestMappingInfo.getPatternsCondition().isEmpty()) {
-                requestMappingInfoSimple.put("patternsCondition", requestMappingInfo.getPatternsCondition());
-            }
-            if (!requestMappingInfo.getProducesCondition().isEmpty()) {
-                requestMappingInfoSimple.put("producesCondition", requestMappingInfo.getProducesCondition());
-            }
-            this.handlerMethod = handlerMethod;
-            this.methodName = handlerMethod.getMethod().getName();
-            this.returnType = handlerMethod.getReturnType().getParameterType().getName();
-            ApiVersion apiVersion = AnnotationUtils.findAnnotation(handlerMethod.getMethod(), ApiVersion.class);
-            if (apiVersion == null) {
-                this.version = "1.0.0";
-            } else {
-                this.version = apiVersion.value();
-            }
-            List<MethodParameter> methodParameterList = Arrays.asList(handlerMethod.getMethodParameters());
-            String[] names = parameterNameDiscoverer.getParameterNames(handlerMethod.getMethod());
-            for (int i = 0; i < methodParameterList.size(); i++) {
-                ParameterInfo info = new ParameterInfo();
-                MethodParameter methodParameter = methodParameterList.get(i);
-                String name = names[i];
-                String type = methodParameter.getParameterType().getName();
-                info.setIndex(i);
-                info.setName(name);
-                info.setRemark(null);
-                ApiParam apiParam = methodParameter.getParameterAnnotation(ApiParam.class);
-                if (apiParam == null) {
-                    info.setRequire(false);
-                    info.setRemark("无");
-                } else {
-                    info.setRequire(apiParam.required());
-                    info.setRemark(apiParam.value());
-                }
-                info.setJavaType(type);
-                parameterTypes.add(info);
-            }
-        }
-
-        public ReturnInfo() {
-            super();
-        }
-    }
-
-    /*@Data
-    public static class RequestMappingInfoSimple {
-        private ConsumesRequestCondition  consumesRequestCondition ;
-        private HeadersRequestCondition  headersRequestCondition ;
-        private RequestMethodsRequestCondition  methodsCondition ;
-        private ParamsRequestCondition paramsCondition;
-        private PatternsRequestCondition  patternsCondition;
-        private ProducesRequestCondition producesCondition;
-    }*/
-
-    @Data
-    public static class ParameterInfo {
-        private String name;
-        private Integer index;
-        private String javaType;
-        private String remark;
-        private boolean require;
     }
 
     @GetMapping("/url")
@@ -312,9 +223,6 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
         return hostNameOverride;
     }
 
-    Object mappingRegistry = null;
-    boolean init = false;
-
     @Override
     public void onWebApplicationEvent(ContextRefreshedEvent event) {
         if (init) {
@@ -344,6 +252,86 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Data
+    public static class ReturnInfo {
+        RequestMappingInfo requestMappingInfo;
+        Map<String, Object> requestMappingInfoSimple = new HashMap<>();
+        HandlerMethod handlerMethod;
+        /**
+         * parameterName:java.lang.String
+         **/
+        List<ParameterInfo> parameterTypes = new ArrayList<>();
+        String returnType;
+        String methodName;
+        String version;
+
+        public ReturnInfo(RequestMappingInfo requestMappingInfo, HandlerMethod handlerMethod) {
+            super();
+            this.requestMappingInfo = requestMappingInfo;
+            if (!requestMappingInfo.getConsumesCondition().isEmpty()) {
+                requestMappingInfoSimple.put("consumesCondition", requestMappingInfo.getConsumesCondition());
+            }
+            if (!requestMappingInfo.getHeadersCondition().isEmpty()) {
+                requestMappingInfoSimple.put("headersCondition", requestMappingInfo.getHeadersCondition());
+            }
+            if (!requestMappingInfo.getMethodsCondition().isEmpty()) {
+                requestMappingInfoSimple.put("methodsCondition", requestMappingInfo.getMethodsCondition());
+            }
+            if (!requestMappingInfo.getParamsCondition().isEmpty()) {
+                requestMappingInfoSimple.put("paramsCondition", requestMappingInfo.getParamsCondition());
+            }
+            if (!requestMappingInfo.getPatternsCondition().isEmpty()) {
+                requestMappingInfoSimple.put("patternsCondition", requestMappingInfo.getPatternsCondition());
+            }
+            if (!requestMappingInfo.getProducesCondition().isEmpty()) {
+                requestMappingInfoSimple.put("producesCondition", requestMappingInfo.getProducesCondition());
+            }
+            this.handlerMethod = handlerMethod;
+            this.methodName = handlerMethod.getMethod().getName();
+            this.returnType = handlerMethod.getReturnType().getParameterType().getName();
+            ApiVersion apiVersion = AnnotationUtils.findAnnotation(handlerMethod.getMethod(), ApiVersion.class);
+            if (apiVersion == null) {
+                this.version = "1.0.0";
+            } else {
+                this.version = apiVersion.value();
+            }
+            List<MethodParameter> methodParameterList = Arrays.asList(handlerMethod.getMethodParameters());
+            String[] names = parameterNameDiscoverer.getParameterNames(handlerMethod.getMethod());
+            for (int i = 0; i < methodParameterList.size(); i++) {
+                ParameterInfo info = new ParameterInfo();
+                MethodParameter methodParameter = methodParameterList.get(i);
+                String name = names[i];
+                String type = methodParameter.getParameterType().getName();
+                info.setIndex(i);
+                info.setName(name);
+                info.setRemark(null);
+                ApiParam apiParam = methodParameter.getParameterAnnotation(ApiParam.class);
+                if (apiParam == null) {
+                    info.setRequire(false);
+                    info.setRemark("无");
+                } else {
+                    info.setRequire(apiParam.required());
+                    info.setRemark(apiParam.value());
+                }
+                info.setJavaType(type);
+                parameterTypes.add(info);
+            }
+        }
+
+        public ReturnInfo() {
+            super();
+        }
+    }
+
+    @Data
+    public static class ParameterInfo {
+        private String name;
+        private Integer index;
+        private String javaType;
+        private String remark;
+        private boolean require;
     }
 
 }
