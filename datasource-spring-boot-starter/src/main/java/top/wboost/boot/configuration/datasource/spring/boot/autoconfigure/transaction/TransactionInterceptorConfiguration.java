@@ -237,7 +237,7 @@ public class TransactionInterceptorConfiguration implements ImportBeanDefinition
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        System.out.println("sad");
+        
     }
 
 

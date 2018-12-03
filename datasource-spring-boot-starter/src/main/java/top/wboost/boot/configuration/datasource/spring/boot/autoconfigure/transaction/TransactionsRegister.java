@@ -16,12 +16,12 @@ import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
 import top.wboost.base.spring.boot.starter.CustomerPropertiesTreeUtil;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.GlobalForDataSourceBootStarter;
-import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.datasource.DataSourceWrapper;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.util.TransactionBeanNameGeneratorUtil;
 import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.system.code.SystemCode;
 import top.wboost.common.system.exception.SystemCodeException;
 import top.wboost.common.util.StringUtil;
+import top.wboost.common.utils.web.utils.PropertiesUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,9 +40,9 @@ public class TransactionsRegister implements ImportBeanDefinitionRegistrar, Bean
     /**解析配置 key:dsName,val:props**/
     Map<String, List<TransactionManagerProperties>> transactionManagerPropertiesUse = new HashMap<>();
     private TransactionManagerCustomizers transactionManagerCustomizers;
-    private BeanDefinitionRegistry registry;
+    //private BeanDefinitionRegistry registry;
     private DefaultListableBeanFactory beanFactory;
-    private Map<String, DataSourceWrapper> dataSourceWrapperMap;
+    //private Map<String, DataSourceWrapper> dataSourceWrapperMap;
     private Logger log = LoggerUtil.getLogger(TransactionsRegister.class);
 
     public TransactionsRegister() {
@@ -55,8 +55,9 @@ public class TransactionsRegister implements ImportBeanDefinitionRegistrar, Bean
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-        this.registry = registry;
-        this.dataSourceWrapperMap = (Map<String, DataSourceWrapper>) beanFactory.getBean(GlobalForDataSourceBootStarter.DATASOURCE_WAPPERS);
+        //this.registry = registry;
+        //this.dataSourceWrapperMap = (Map<String, DataSourceWrapper>) beanFactory.getBean(GlobalForDataSourceBootStarter.DATASOURCE_WAPPERS);
+        System.out.println(PropertiesUtil.getProperty("common.log.datasource"));
         Map<String, TransactionManagerProperties> transactionManagerPropertiesMap = CustomerPropertiesTreeUtil.resolvePropertiesTree(
                 TransactionManagerProperties.class, "common.jdbc.transaction", "primary", "datasource", "transactionManager");
         transactionManagerPropertiesMap.forEach((name,val) -> {
