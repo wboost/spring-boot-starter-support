@@ -1,6 +1,5 @@
 package top.wboost.base.spring.boot.starter;
 
-import org.springframework.util.AntPathMatcher;
 import top.wboost.common.util.CopyUtil;
 import top.wboost.common.util.ReflectUtil;
 import top.wboost.common.util.StringUtil;
@@ -56,6 +55,7 @@ public class CustomerPropertiesTreeUtil {
     public static <T> Map<String, T> resolvePropertiesTree(Class<T> clazz, T prop, String prefix, String defaultName,
             String... filterName) {
         Map<String, Object> resolveConfigs = PropertiesUtil.getPropertiesByPrefix(prefix);
+        resolveConfigs = PropertiesUtil.resolveProperties(resolveConfigs);
         converterArray(resolveConfigs);
         String pattern = prefix.replaceAll("\\.", "\\\\.") + "\\.(.+?)\\.(.+)";
         Map<String, T> resolvers = new HashMap<>();
@@ -77,7 +77,7 @@ public class CustomerPropertiesTreeUtil {
         return resolvers;
     }
 
-    private static void setProp(Method dsPropMethod, Object obj, Object value) {
+    public static void setProp(Method dsPropMethod, Object obj, Object value) {
         if (dsPropMethod != null) {
             Class<?> parameterType = dsPropMethod.getParameterTypes()[0];
             if (parameterType.isArray()) {
@@ -120,7 +120,7 @@ public class CustomerPropertiesTreeUtil {
         return value;
     }
 
-    private static void converterArray(Map<String, Object> configs) {
+    public static void converterArray(Map<String, Object> configs) {
         Map<String, List<Integer>> map = new HashMap<>();
         for (Entry<String, Object> entry : configs.entrySet()) {
             int right = entry.getKey().indexOf("]");
@@ -166,13 +166,6 @@ public class CustomerPropertiesTreeUtil {
 
         }
         return sb.toString();
-    }
-
-    public static void main(String[] args) throws NoSuchFieldException, SecurityException {
-        AntPathMatcher antPathMatcher = new AntPathMatcher();
-        System.out.println(antPathMatcher.match("common.jdbc.*.a", "common.jdbc.a"));
-
-
     }
 
 }
