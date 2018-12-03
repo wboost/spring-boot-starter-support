@@ -76,9 +76,8 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         List<PropertySource<?>> environmentFetch = fetchConfigProcessor.fetchConfig();
         System.out.println(JSONObject.toJSONString(environmentFetch));
         environmentFetch.forEach(propertySource -> environment.getPropertySources().addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, propertySource));
-        System.out.println("postProcessEnvironment");
         fetchConfigProcessor.registerClient(environment);
-        System.out.println("registerClient");
+        logger.info("registerClient");
     }
 
     @Override
@@ -98,7 +97,7 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         public void registerClient(ConfigurableEnvironment environment) {
             String url = serverAddr + "/register/hello/" + applicationName;
             try {
-                ResponseEntity<String> profiles = HttpClientUtil.execute(HttpRequestBuilder.post(url).addParameter("port", environment.getProperty("server.port")));
+                ResponseEntity<String> profiles = HttpClientUtil.execute(HttpRequestBuilder.post(url).addParameter("ip", environment.getProperty("spring.cloud.client.ipAddress")).addParameter("port", environment.getProperty("server.port")));
                 if (profiles.getStatusCode() != HttpStatus.OK) {
                     throw new FetchConfigProcessorException("register client error." + profiles.getStatusCode().toString());
                 }
