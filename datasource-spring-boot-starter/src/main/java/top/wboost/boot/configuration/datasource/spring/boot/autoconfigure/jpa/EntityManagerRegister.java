@@ -90,7 +90,6 @@ public class EntityManagerRegister implements ImportBeanDefinitionRegistrar {
             this.entityManagerFactoryBuilder = beanFactory.getBean(EntityManagerFactoryBuilder.class);
             LocalContainerEntityManagerFactoryBean build = entityManagerFactoryBuilder.dataSource(dataSource).packages(entityManagerFactoryProperties.getEntityPackages()).build();
             String beanName = entityManagerFactoryProperties.getName() + "FACTORY";
-            System.out.println(beanName);
             ((DefaultListableBeanFactory) beanFactory).registerSingleton(beanName, build);
             ((DefaultListableBeanFactory) beanFactory).initializeBean(build, beanName);
             this.entityManagerFactory = (EntityManagerFactory) beanFactory.getBean(entityManagerFactoryProperties.getName() + "FACTORY");

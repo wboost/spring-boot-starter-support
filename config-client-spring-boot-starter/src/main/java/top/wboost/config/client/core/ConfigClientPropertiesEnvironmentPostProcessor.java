@@ -7,24 +7,20 @@ import org.slf4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.boot.env.PropertySourcesLoader;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import top.wboost.base.spring.boot.starter.util.SpringBootPropertiesLoadUtil;
 import top.wboost.common.base.entity.HttpRequestBuilder;
 import top.wboost.common.exception.BusinessCodeException;
 import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.util.HttpClientUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,9 +30,6 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
 
     //优先于ConfigFileApplicationListener
     public static final int DEFAULT_ORDER = ConfigFileApplicationListener.DEFAULT_ORDER - 2;
-    private final String[] resources = new String[]{"classpath:/bootstrap.yml", "classpath:/application.yml"};
-    private PropertySourcesLoader propertySourcesLoader = new PropertySourcesLoader();
-    private ResourceLoader resourceLoader = new DefaultResourceLoader();
     private Logger logger = LoggerUtil.getLogger(ConfigClientPropertiesEnvironmentPostProcessor.class);
 
 
@@ -53,18 +46,7 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
             return;
         }
         StandardEnvironment environmentInit = new StandardEnvironment();
-        environmentInit.merge(environment);
-        try {
-            for (String resource : Arrays.asList(resources)) {
-                Resource bootstrapResource = this.resourceLoader.getResource(resource);
-                PropertySource<?> load = propertySourcesLoader.load(bootstrapResource, "applicationConfig: [profile=]", "wboostConfigClient: [" + resource + "]", null);
-                if (load != null) {
-                    environmentInit.getPropertySources().addLast(load);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        environmentInit.merge(SpringBootPropertiesLoadUtil.getInitEnvironment());
         String serverId = environmentInit.getProperty("common.config.client.server-id");
         String serverAddr = environmentInit.getProperty("common.config.client.server-addr");
         String applicationName = environmentInit.getProperty("spring.application.name");
@@ -123,7 +105,7 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
                     JSONObject jsonObject = JSONObject.parseObject(body);
                     JSONObject data = jsonObject.getJSONObject("data");
                     JSONObject source = data.getJSONObject("source");
-                    MapPropertySource mapPropertySource = new MapPropertySource("wboostConfigClientFetch:" + jsonObject.getString("name"), source);
+                    MapPropertySource mapPropertySource = new MapPropertySource("wboostConfigClientFetch:public", source);
                     logger.info("fetch success. {}",mapPropertySource);
                     return mapPropertySource;
                 } else {

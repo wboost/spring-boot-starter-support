@@ -1,5 +1,6 @@
 package top.wboost.common.spring.boot.webmvc;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
@@ -32,6 +33,7 @@ import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2Mapper;
 import springfox.documentation.swagger2.web.HostNameProvider;
 import springfox.documentation.swagger2.web.Swagger2Controller;
 import top.wboost.common.annotation.Explain;
+import top.wboost.common.annotation.parameter.NotEmpty;
 import top.wboost.common.base.entity.ResultEntity;
 import top.wboost.common.spring.boot.webmvc.annotation.ApiVersion;
 import top.wboost.common.spring.boot.webmvc.annotation.GlobalForApiConfig;
@@ -110,6 +112,7 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
             Swagger swagger = getDocumentation(swaggerGroup, servletRequest);
             json = JSONObject.parseObject(JSONObjectUtil.toJSONString(swagger, jsonConfig, "vendorExtensions",
                     "operations", "operationMap", "empty"));
+            JSONArray simpleApis = new JSONArray();
             json.getJSONObject("paths").forEach((path, jo) -> {
                 JSONObject paths = (JSONObject) jo;
                 List<RequestMappingInfo> infos = urlLookup.get(path);
@@ -129,6 +132,8 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
                                         versionStr = version.value();
                                     }
                                     valuesObj.put("version", versionStr);
+                                    JSONObject simpleApi = new JSONObject();
+                                    simpleApi.put("description", valuesObj.getString("description"));
                                 }
                                 break;
                             }
@@ -140,6 +145,26 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
             e.printStackTrace();
         }
         return ResultEntity.success(SystemCode.QUERY_OK).setData(json).build();
+    }
+
+    @GetMapping("docs/simple")
+    @Explain(value = "查询所有接口")
+    public ResultEntity getAllMappingBySwaggerSimple(@RequestParam(value = "group", required = false) String swaggerGroup,
+                                                     HttpServletRequest servletRequest) {
+        ResultEntity allMappingBySwagger = getAllMappingBySwagger(swaggerGroup, servletRequest);
+        return allMappingBySwagger.setFilterNames("responses", "parameters");
+    }
+
+    @PostMapping("docs/detail")
+    @Explain(value = "查询所有接口")
+    public ResultEntity getAllMappingBySwaggerSimple(@NotEmpty String path, @NotEmpty String method, @RequestParam(value = "group", required = false) String swaggerGroup,
+                                                     HttpServletRequest servletRequest) {
+        ResultEntity allMappingBySwagger = getAllMappingBySwagger(swaggerGroup, servletRequest);
+        JSONObject jo = (JSONObject) allMappingBySwagger.getData();
+        JSONObject paths = jo.getJSONObject("paths");
+        JSONObject pathObj = paths.getJSONObject(path);
+        JSONObject methodObj = pathObj.getJSONObject(method);
+        return ResultEntity.success(SystemCode.QUERY_OK).setData(methodObj).build();
     }
 
     @GetMapping("/url")

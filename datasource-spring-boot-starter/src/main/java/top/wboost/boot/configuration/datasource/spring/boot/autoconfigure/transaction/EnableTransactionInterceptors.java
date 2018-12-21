@@ -3,7 +3,6 @@ package top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.trans
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AliasFor;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 
@@ -51,14 +50,16 @@ import java.lang.annotation.*;
 @Import({TransactionInterceptorConfiguration.class})
 public @interface EnableTransactionInterceptors {
 
-    @AliasFor("value")
+    //@AliasFor("value")
     Config[] transactionInterceptors() default {};
 
     /**
      * 多个拦截器配置
      */
-    @AliasFor("transactionInterceptors")
-    Config[] value() default {};
+    /*@AliasFor("transactionInterceptors")
+    Config[] value();*/
+
+    Attribute[] attributes();
 
     int order() default Ordered.LOWEST_PRECEDENCE;
 
@@ -89,11 +90,11 @@ public @interface EnableTransactionInterceptors {
     @interface Config {
 
         /**
-         * <pre>
-         *   tx:attributes
-         * </pre>
+         * 关联配置名
+         *
+         * @return
          */
-        Attribute[] attributes();
+        String attributesRef();
 
         /**
          * 创建bean名
@@ -103,7 +104,7 @@ public @interface EnableTransactionInterceptors {
         /**
          * 事物管理器
          */
-        String transactionManagerRef() default "";
+        String transactionManagerRef();
 
         /**
          * 选择连接池默认对应的事物管理器，若事物管理器已指定，则此配置项无效
@@ -136,69 +137,80 @@ public @interface EnableTransactionInterceptors {
             int order() default Ordered.LOWEST_PRECEDENCE;
         }
 
-        /**
-         * 配置传播
-         */
+
+    }
+
+    /**
+     * 配置传播
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({})
+    @interface Attribute {
+
+        String name();
+
+        Method[] value();
+
         @Retention(RetentionPolicy.RUNTIME)
         @Target({})
-        @interface Attribute {
+        @interface Method {
 
-            Method[] value();
+            /**
+             * The method name(s) with which the transaction attributes are to be
+             * associated. The wildcard (*) character can be used to associate the
+             * same transaction attribute settings with a number of methods; for
+             * example, 'get*', 'handle*', '*Order', 'on*Event', etc.
+             *
+             * @return
+             */
+            String name();
 
-            @Retention(RetentionPolicy.RUNTIME)
-            @Target({})
-            @interface Method {
+            /**
+             * The transaction propagation behavior.
+             *
+             * @return
+             */
+            Propagation propagation() default Propagation.REQUIRED;
 
-                /**
-                 * 	The method name(s) with which the transaction attributes are to be
-                 * 	associated. The wildcard (*) character can be used to associate the
-                 * 	same transaction attribute settings with a number of methods; for
-                 * 	example, 'get*', 'handle*', '*Order', 'on*Event', etc.
-                 * @return
-                 */
-                String name();
+            /**
+             * The transaction isolation level.
+             *
+             * @return
+             */
+            Isolation isolation() default Isolation.DEFAULT;
 
-                /**
-                 * The transaction propagation behavior.
-                 * @return
-                 */
-                Propagation propagation() default Propagation.REQUIRED;
+            /**
+             * The transaction timeout value (in seconds).
+             *
+             * @return
+             */
+            int timeout() default -1;
 
-                /**
-                 * The transaction isolation level.
-                 * @return
-                 */
-                Isolation isolation() default Isolation.DEFAULT;
+            /**
+             * Is this transaction read-only?
+             *
+             * @return
+             */
+            boolean readOnly() default false;
 
-                /**
-                 * The transaction timeout value (in seconds).
-                 * @return
-                 */
-                int timeout() default -1;
+            /**
+             * The Exception(s) that will trigger rollback; comma-delimited.
+             * For example, 'com.foo.MyBusinessException,ServletException'
+             *
+             * @return
+             */
+            String rollbackFor() default "";
 
-                /**
-                 * Is this transaction read-only?
-                 * @return
-                 */
-                boolean readOnly() default false;
-
-                /**
-                 * The Exception(s) that will trigger rollback; comma-delimited.
-                 * 	For example, 'com.foo.MyBusinessException,ServletException'
-                 * @return
-                 */
-                String rollbackFor() default "";
-
-                /**
-                 * 	The Exception(s) that will *not* trigger rollback; comma-delimited.
-                 * 	For example, 'com.foo.MyBusinessException,ServletException'
-                 * @return
-                 */
-                String noRollbackFor() default "";
-
-            }
+            /**
+             * The Exception(s) that will *not* trigger rollback; comma-delimited.
+             * For example, 'com.foo.MyBusinessException,ServletException'
+             *
+             * @return
+             */
+            String noRollbackFor() default "";
 
         }
+
     }
 
 }

@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>top.wboost</groupId>
 		<artifactId>spring-boot-starter-support</artifactId>
-		<version>3.1.5-SNAPSHOT</version>
+		<version>3.1.6-SNAPSHOT</version>
 	</parent>
 	<artifactId>config-client-spring-boot-starter</artifactId>
 	<properties>
 		<!-- chinaoly -->
 		<tools-group-id>top.wboost</tools-group-id>
-		<tools-group-version>3.1.5-SNAPSHOT</tools-group-version>
+		<tools-group-version>3.1.6-SNAPSHOT</tools-group-version>
 		<!-- /chinaoly -->
 
 		<!-- config -->

@@ -84,7 +84,7 @@ public class SwaggerApiAutoConfiguration implements Ordered {
                 response.setContentType("multipart/form-data");
                 response.setHeader("Content-Disposition",
                         "attachment;fileName=" + URLEncoder.encode(SpringBootUtil.getLauncherClass().getName() + ".zip", CharsetEnum.UTF_8.getName()));
-                jarInputStream = FileCopyUtil.readJarFile("api_export.zip");
+                jarInputStream = FileCopyUtil.readJarFile("api-doc.zip");
                 zipInputStream = new ZipInputStream(jarInputStream);
                 zipOutputStream = new ZipOutputStream(response.getOutputStream());
                 byte[] buf = new byte[1024];
@@ -100,11 +100,10 @@ public class SwaggerApiAutoConfiguration implements Ordered {
                             zipOutputStream.write(buf, 0, len);
                         }
                     } catch (Exception e) {
-                        System.out.println(nextEntry);
                         throw e;
                     }
                 }
-                ZipEntry apiEntry = new ZipEntry("swagger-ui/webjars/api.js");
+                ZipEntry apiEntry = new ZipEntry("api-doc/webjars/api.js");
                 zipOutputStream.putNextEntry(apiEntry);
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(resolveApi(request).getBytes());
                 int len;

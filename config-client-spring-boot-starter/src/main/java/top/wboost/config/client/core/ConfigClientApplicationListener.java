@@ -8,11 +8,11 @@ import top.wboost.common.boot.util.SpringBootUtil;
 
 public class ConfigClientApplicationListener implements SpringApplicationRunListener {
 
+    public String jarName;
     private ConfigurableApplicationContext context;
     private Class<?> launcherClass;
     private SpringApplication application;
     private String[] args;
-    public String jarName;
 
     public ConfigClientApplicationListener(SpringApplication application, String[] args) {
         this.application = application;
@@ -21,12 +21,12 @@ public class ConfigClientApplicationListener implements SpringApplicationRunList
 
     @Override
     public void starting() {
-        System.out.println("starting");
+        //System.out.println("starting");
     }
 
     @Override
     public void environmentPrepared(ConfigurableEnvironment environment) {
-        System.out.println("environmentPrepared");
+        //System.out.println("environmentPrepared");
     }
 
     @Override
@@ -36,18 +36,18 @@ public class ConfigClientApplicationListener implements SpringApplicationRunList
         this.launcherClass = SpringBootUtil.getLauncherClass();
         String file = launcherClass.getProtectionDomain().getCodeSource().getLocation().getFile();
         this.jarName = file;
-        System.out.println(file);
-        System.out.println("contextPrepared");
+        //System.out.println(file);
+        //System.out.println("contextPrepared");
     }
 
     @Override
     public void contextLoaded(ConfigurableApplicationContext context) {
-        System.out.println("contextLoaded");
+        //System.out.println("contextLoaded");
     }
 
     @Override
     public void finished(ConfigurableApplicationContext context, Throwable exception) {
-        System.out.println("finished");
+        //System.out.println("finished");
     }
 
     public void restartContext() {

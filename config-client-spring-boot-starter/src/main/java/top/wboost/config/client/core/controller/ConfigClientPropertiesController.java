@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import top.wboost.common.annotation.Explain;
 import top.wboost.common.base.entity.ResultEntity;
 import top.wboost.common.system.code.SystemCode;
+import top.wboost.common.utils.web.core.ConfigProperties;
 import top.wboost.common.utils.web.utils.PropertiesUtil;
 import top.wboost.config.client.core.ConfigClientApplicationListener;
 
@@ -23,6 +24,7 @@ public class ConfigClientPropertiesController {
     ConfigClientApplicationListener configClientApplicationListener;
 
     public static List<Prop> getPropertyUses() {
+        //StandardServletEnvironment localenv = ConfigProperties.localenv;
         Map<String, Object> retMap = PropertiesUtil.getAllProperties();
         List<Prop> props = new ArrayList<>();
         retMap.forEach((key, val) -> props.add(new Prop(key, val)));
@@ -34,6 +36,12 @@ public class ConfigClientPropertiesController {
     @Explain(systemCode = SystemCode.DO_FAIL, value = "获取所有使用中的配置项")
     public ResultEntity properties() {
         return ResultEntity.success(SystemCode.DO_OK).setData(getPropertyUses()).build();
+    }
+
+    @GetMapping("env")
+    @Explain(systemCode = SystemCode.DO_FAIL, value = "获取环境配置")
+    public ResultEntity env() {
+        return ResultEntity.success(SystemCode.DO_OK).setData(ConfigProperties.localenv).build();
     }
 
     @lombok.Data

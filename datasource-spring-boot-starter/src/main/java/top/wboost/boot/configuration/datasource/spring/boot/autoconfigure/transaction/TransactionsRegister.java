@@ -21,7 +21,6 @@ import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.system.code.SystemCode;
 import top.wboost.common.system.exception.SystemCodeException;
 import top.wboost.common.util.StringUtil;
-import top.wboost.common.utils.web.utils.PropertiesUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,9 +54,6 @@ public class TransactionsRegister implements ImportBeanDefinitionRegistrar, Bean
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-        //this.registry = registry;
-        //this.dataSourceWrapperMap = (Map<String, DataSourceWrapper>) beanFactory.getBean(GlobalForDataSourceBootStarter.DATASOURCE_WAPPERS);
-        System.out.println(PropertiesUtil.getProperty("common.log.datasource"));
         Map<String, TransactionManagerProperties> transactionManagerPropertiesMap = CustomerPropertiesTreeUtil.resolvePropertiesTree(
                 TransactionManagerProperties.class, "common.jdbc.transaction", "primary", "datasource", "transactionManager");
         transactionManagerPropertiesMap.forEach((name,val) -> {

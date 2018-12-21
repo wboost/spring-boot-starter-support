@@ -15,6 +15,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.interceptor.*;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.GlobalForDataSourceBootStarter;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.util.TransactionBeanNameGeneratorUtil;
@@ -24,10 +25,7 @@ import top.wboost.common.system.code.SystemCode;
 import top.wboost.common.system.exception.SystemCodeException;
 import top.wboost.common.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 注册事物管理拦截器，创建全局拦截,与tx:method标签相同功能
@@ -70,10 +68,19 @@ public class TransactionInterceptorConfiguration implements ImportBeanDefinition
         EnableTransactionInterceptors enableTransactionInterceptor = AnnotationUtils.getAnnotation(launcherClass, EnableTransactionInterceptors.class);
         this.transactionConfig = new TransactionConfig();
         this.transactionConfig.setEnableTransactionInterceptors(enableTransactionInterceptor);
-        EnableTransactionInterceptors.Config[] transactionInterceptorConfigs = enableTransactionInterceptor.value();
+        EnableTransactionInterceptors.Config[] transactionInterceptorConfigs = enableTransactionInterceptor.transactionInterceptors();
+        EnableTransactionInterceptors.Attribute[] attributes = enableTransactionInterceptor.attributes();
+        Map<String, EnableTransactionInterceptors.Attribute> attributeMap = new HashMap<>();
+        for (int i = 0; i < attributes.length; i++) {
+            EnableTransactionInterceptors.Attribute attribute = attributes[i];
+            attributeMap.put(attribute.name(), attribute);
+        }
         for (EnableTransactionInterceptors.Config transactionInterceptorConfig : transactionInterceptorConfigs) {
             // 创建TransactionInterceptor对象并存入事物管理器映射及指定方法切面
-            BeanDefinition beanDefinition = parseTransactionInterceptorConfig(transactionInterceptorConfig);
+            String attributesRef = transactionInterceptorConfig.attributesRef();
+            EnableTransactionInterceptors.Attribute attribute = attributeMap.get(attributesRef);
+            Assert.notNull(attribute, "EnableTransactionInterceptors.Config.attributesRef: " + attributesRef + ", cant find.");
+            BeanDefinition beanDefinition = parseTransactionInterceptorConfig(transactionInterceptorConfig, attribute);
             this.transactionConfig.getTransactionInterceptors().add(beanDefinition );
             // 注册至容器
             String transactionInterceptorBeanName = generatorTransactionInterceptorBeanName(transactionInterceptorConfig);
@@ -126,7 +133,7 @@ public class TransactionInterceptorConfiguration implements ImportBeanDefinition
 //        return getTransactionConfig().getPrimaryTransactionInterceptor();
 //    }
 
-    private BeanDefinition parseTransactionInterceptorConfig(EnableTransactionInterceptors.Config transactionInterceptorConfig) {
+    private BeanDefinition parseTransactionInterceptorConfig(EnableTransactionInterceptors.Config transactionInterceptorConfig, EnableTransactionInterceptors.Attribute attribute) {
         // 创建事物拦截器
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition();
         builder.getRawBeanDefinition().setBeanClass(TransactionInterceptor.class);
@@ -147,26 +154,26 @@ public class TransactionInterceptorConfiguration implements ImportBeanDefinition
         logger.info("transactionInterceptorConfig {} use transactionManagerRef {}",generatorTransactionInterceptorBeanName(transactionInterceptorConfig), transactionManagerRef);
         builder.addPropertyReference("transactionManager", transactionManagerRef);
         //创建事物属性对象
-        RootBeanDefinition attributeSource = parseAttributeSource(transactionInterceptorConfig.attributes());
+        RootBeanDefinition attributeSource = parseAttributeSource(attribute);
         if (attributeSource == null) {
             builder.addPropertyValue("transactionAttributeSource",
                     new RootBeanDefinition("org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"));
         } else {
-            builder.addPropertyValue("transactionAttributeSource", parseAttributeSource(transactionInterceptorConfig.attributes()));
+            builder.addPropertyValue("transactionAttributeSource", parseAttributeSource(attribute));
         }
         return builder.getBeanDefinition();
     }
 
-    private RootBeanDefinition parseAttributeSource(EnableTransactionInterceptors.Config.Attribute[] attributes) {
+    private RootBeanDefinition parseAttributeSource(EnableTransactionInterceptors.Attribute... attributes) {
         if (attributes.length > 1) {
             throw new TransactionInterceptorConfigurationError("Element <attributes> is allowed at most once inside element <advice>");
         }else if (attributes.length == 1) {
             // Using attributes source.
-            EnableTransactionInterceptors.Config.Attribute attributeEle = attributes[0];
-            List<EnableTransactionInterceptors.Config.Attribute.Method> methods = Arrays.asList(attributeEle.value());
+            EnableTransactionInterceptors.Attribute attributeEle = attributes[0];
+            List<EnableTransactionInterceptors.Attribute.Method> methods = Arrays.asList(attributeEle.value());
             ManagedMap<TypedStringValue, RuleBasedTransactionAttribute> transactionAttributeMap =
                 new ManagedMap<>(methods.size());
-            for (EnableTransactionInterceptors.Config.Attribute.Method methodEle : methods) {
+            for (EnableTransactionInterceptors.Attribute.Method methodEle : methods) {
                 String name = methodEle.name();
                 TypedStringValue nameHolder = new TypedStringValue(name);
                 RuleBasedTransactionAttribute attribute = new RuleBasedTransactionAttribute();
