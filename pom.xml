@@ -5,7 +5,7 @@
   <parent>
     <groupId>top.wboost</groupId>
     <artifactId>common</artifactId>
-      <version>3.1.6-SNAPSHOT</version>
+      <version>3.1.6.RELEASE</version>
   </parent>
   <packaging>pom</packaging>
     <artifactId>spring-boot-starter-support</artifactId>
@@ -34,6 +34,10 @@
   	</scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <!-- wboost -->
+      <project-group-id>top.wboost</project-group-id>
+      <project-group-version>3.1.6.RELEASE</project-group-version>
+      <!-- /postss -->
   </properties>
   <modules>
     <module>base-spring-boot-starter</module>
@@ -43,6 +47,48 @@
     <module>webmvc-spring-boot-starter</module>
     <module>swagger-spring-boot-starter</module>
   </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- model -->
+            <dependency>
+                <groupId>top.wboost</groupId>
+                <artifactId>base-spring-boot-starter</artifactId>
+                <version>3.1.6.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>top.wboost</groupId>
+                <artifactId>config-server-spring-boot-starter</artifactId>
+                <version>3.1.6.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>top.wboost</groupId>
+                <artifactId>config-client-spring-boot-starter</artifactId>
+                <version>3.1.6.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>top.wboost</groupId>
+                <artifactId>datasource-spring-boot-starter</artifactId>
+                <version>3.1.6.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>top.wboost</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>3.1.6.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>top.wboost</groupId>
+                <artifactId>webmvc-spring-boot-starter</artifactId>
+                <version>3.1.6.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>top.wboost</groupId>
+                <artifactId>swagger-spring-boot-starter</artifactId>
+                <version>3.1.6.RELEASE</version>
+            </dependency>
+            <!-- /model -->
+        </dependencies>
+    </dependencyManagement>
   
   <profiles>
 		<profile>

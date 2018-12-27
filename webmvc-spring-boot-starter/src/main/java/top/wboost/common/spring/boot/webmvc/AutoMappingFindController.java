@@ -156,7 +156,7 @@ public class AutoMappingFindController implements InitializingBean, EzWebApplica
     }
 
     @PostMapping("docs/detail")
-    @Explain(value = "查询所有接口")
+    @Explain(value = "查询接口详情")
     public ResultEntity getAllMappingBySwaggerSimple(@NotEmpty String path, @NotEmpty String method, @RequestParam(value = "group", required = false) String swaggerGroup,
                                                      HttpServletRequest servletRequest) {
         ResultEntity allMappingBySwagger = getAllMappingBySwagger(swaggerGroup, servletRequest);
