@@ -5,6 +5,7 @@ import org.springframework.core.OrderComparator;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 import top.wboost.common.annotation.Explain;
 import top.wboost.common.base.entity.ResultEntity;
 import top.wboost.common.system.code.SystemCode;
@@ -18,13 +19,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/config/client/properties")
+@ApiIgnore
 public class ConfigClientPropertiesController {
 
     @Autowired
     ConfigClientApplicationListener configClientApplicationListener;
 
     public static List<Prop> getPropertyUses() {
-        //StandardServletEnvironment localenv = ConfigProperties.localenv;
         Map<String, Object> retMap = PropertiesUtil.getAllProperties();
         List<Prop> props = new ArrayList<>();
         retMap.forEach((key, val) -> props.add(new Prop(key, val)));

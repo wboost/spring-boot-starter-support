@@ -13,4 +13,6 @@ import top.wboost.config.client.core.controller.ConfigClientSysController;
         ConfigClientSysController.class,
         ConfigClientPropertiesController.class})
 public class ConfigClientRegister {
+
+    public static final String WEB_PREFIX = "/config/client/sys";
 }

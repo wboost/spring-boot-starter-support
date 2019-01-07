@@ -22,14 +22,13 @@ import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.util.HttpClientUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class ConfigClientPropertiesEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
     //优先于ConfigFileApplicationListener
-    public static final int DEFAULT_ORDER = ConfigFileApplicationListener.DEFAULT_ORDER - 2;
+    private static final int DEFAULT_ORDER = ConfigFileApplicationListener.DEFAULT_ORDER - 2;
     private Logger logger = LoggerUtil.getLogger(ConfigClientPropertiesEnvironmentPostProcessor.class);
 
 
@@ -120,7 +119,7 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
             String url = serverAddr + "/config/" + applicationName + "/";
             List<PropertySource<?>> sources = new ArrayList<>();
             try {
-                for (String profile : Arrays.asList(profiles)) {
+                for (String profile : profiles) {
                     ResponseEntity<String> prop = HttpClientUtil.execute(HttpRequestBuilder.get(url + profile));
                     if (prop.getStatusCode() == HttpStatus.OK) {
                         String body = prop.getBody();

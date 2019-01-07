@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>top.wboost</groupId>
 		<artifactId>spring-boot-starter-support</artifactId>
-        <version>3.1.6.RELEASE</version>
+		<version>3.1.7-SNAPSHOT</version>
 	</parent>
 	<artifactId>config-client-spring-boot-starter</artifactId>
 	<properties>
 		<!-- chinaoly -->
 		<tools-group-id>top.wboost</tools-group-id>
-        <tools-group-version>3.1.6.RELEASE</tools-group-version>
+		<tools-group-version>3.1.7-SNAPSHOT</tools-group-version>
 		<!-- /chinaoly -->
 
 		<!-- config -->
@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>${tools-group-id}</groupId>
 			<version>${tools-group-version}</version>
-			<artifactId>base-spring-boot-starter</artifactId>
+			<artifactId>swagger-spring-boot-starter</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
