@@ -12,6 +12,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import top.wboost.base.spring.boot.starter.Condition.ConditionalHasPropertyPrefix;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.datasource.DataSourceWrapper;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.datasource.DataSourcesRegister;
+import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.datasource.JdbcProperties;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.jpa.EntityManagerFactoryProperties;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.jpa.EntityManagerRegister;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.transaction.TransactionsRegister;
@@ -28,6 +29,7 @@ import static top.wboost.boot.configuration.datasource.spring.boot.autoconfigure
         DruidDataSourceAutoConfigure.class,
         DataSourceAutoConfiguration.class,
         TransactionAutoConfiguration.class})
+@EnableConfigurationProperties(JdbcProperties.class)
 public class JdbcAutoConfiguration {
 
     @Configuration

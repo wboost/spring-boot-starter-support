@@ -6,10 +6,21 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.wboost.boot.configuration.datasource.spring.boot.autoconfigure.GlobalForDataSourceBootStarter;
 
 /**
- * @className EntityManagerFactoryProperties
- * @author jwSun
- * @date 2018年4月14日 下午11:58:10
- * @version 1.0.0
+ * JDBC所有配置项
+ * <pre>
+ * common:
+ *   jdbc:
+ *     jpa:
+ *       entityManagerFactory:
+ *         entityManagerFactory:
+ *           entity-packages: com.chinaoly.primary
+ *           datasource: primary
+ *           name: entityManagerFactory
+ *         entityManagerFactorySec:
+ *           entity-packages: com.chinaoly.sec
+ *           datasource: sec
+ *           name: entityManagerFactorySec
+ * </pre>
  */
 @Data
 @ConfigurationProperties(GlobalForDataSourceBootStarter.PROPERTIES_JDBC + ".jpa.entityManagerFactory")
