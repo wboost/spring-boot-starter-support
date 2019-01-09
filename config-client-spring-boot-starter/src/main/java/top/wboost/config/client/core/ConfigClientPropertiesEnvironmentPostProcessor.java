@@ -25,12 +25,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static top.wboost.common.base.ConfigForBase.PropertiesConfig.IS_DEBUG;
+
 public class ConfigClientPropertiesEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
     //优先于ConfigFileApplicationListener
     private static final int DEFAULT_ORDER = ConfigFileApplicationListener.DEFAULT_ORDER - 2;
     private Logger logger = LoggerUtil.getLogger(ConfigClientPropertiesEnvironmentPostProcessor.class);
-
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
@@ -55,10 +56,11 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         fetchConfigProcessor.setApplicationName(applicationName);
         fetchConfigProcessor.setProfiles(environmentInit.getActiveProfiles());
         List<PropertySource<?>> environmentFetch = fetchConfigProcessor.fetchConfig();
-        System.out.println(JSONObject.toJSONString(environmentFetch));
+        if (environmentInit.getProperty(IS_DEBUG) != null && Boolean.valueOf(environmentInit.getProperty(IS_DEBUG))) {
+            System.out.println(JSONObject.toJSONString(environmentFetch));
+        }
         environmentFetch.forEach(propertySource -> environment.getPropertySources().addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, propertySource));
         fetchConfigProcessor.registerClient(environment);
-        logger.info("registerClient");
     }
 
     @Override

@@ -11,7 +11,6 @@
 	<properties>
 		<!-- chinaoly -->
 		<tools-group-id>top.wboost</tools-group-id>
-		<tools-group-version>3.1.7-SNAPSHOT</tools-group-version>
 		<!-- /chinaoly -->
 
 		<!-- config -->
@@ -23,8 +22,16 @@
 	<dependencies>
 		<dependency>
 			<groupId>${tools-group-id}</groupId>
-			<version>${tools-group-version}</version>
 			<artifactId>swagger-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${tools-group-id}</groupId>
+			<artifactId>common-netty</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.19.Final</version>
 		</dependency>
 	</dependencies>
 	<build>

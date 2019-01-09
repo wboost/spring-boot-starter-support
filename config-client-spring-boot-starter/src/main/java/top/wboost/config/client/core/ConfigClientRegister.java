@@ -11,8 +11,11 @@ import top.wboost.config.client.core.controller.ConfigClientSysController;
  */
 @Import({
         ConfigClientSysController.class,
-        ConfigClientPropertiesController.class})
+        ConfigClientPropertiesController.class,
+        ClientBeanRegister.class})
 public class ConfigClientRegister {
 
     public static final String WEB_PREFIX = "/config/client/sys";
+
+    public static final String REQUEST_END = "end...";
 }
