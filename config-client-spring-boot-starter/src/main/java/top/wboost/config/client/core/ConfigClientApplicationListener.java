@@ -105,6 +105,7 @@ public class ConfigClientApplicationListener implements SpringApplicationRunList
     }
 
     protected void stopAll() {
+        logger.info("---------STOP SPRING CONTEXT---------");
         this.context.close();
     }
 

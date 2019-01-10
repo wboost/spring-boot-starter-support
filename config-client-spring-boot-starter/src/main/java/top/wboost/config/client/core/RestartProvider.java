@@ -81,11 +81,13 @@ public class RestartProvider implements ApplicationListener<ApplicationEvent> {
 
 
     public static class NettyContainer {
+        private static final Logger LOGGER = LoggerUtil.getLogger(NettyContainer.class);
         List<EventLoopGroup> eventLoopGroups = new ArrayList<>();
         int socketPort;
         List<RestartObserver> restartObservers;
         Map<String, Ctx> logs = new HashMap<>();
         Thread runThread;
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
         public NettyContainer(int socketPort, List<RestartObserver> restartObservers) {
             this.socketPort = socketPort;
@@ -126,7 +128,6 @@ public class RestartProvider implements ApplicationListener<ApplicationEvent> {
                                     .option(ChannelOption.SO_KEEPALIVE, true); //保持连接
                             ChannelFuture future = bootstrap.bind(socketPort).sync();
                             LOGGER.info("start socket for log. port:" + socketPort);
-                            ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
                             scheduledExecutorService.scheduleAtFixedRate(() -> {
                                 Iterator<Map.Entry<String, Ctx>> iterator = logs.entrySet().iterator();
                                 while (iterator.hasNext()) {
@@ -150,7 +151,9 @@ public class RestartProvider implements ApplicationListener<ApplicationEvent> {
         }
 
         public void stopSocket() {
+            LOGGER.info("---------STOP ALL NettyContainer THREAD---------");
             this.eventLoopGroups.forEach(eventExecutors -> eventExecutors.shutdownGracefully());
+            this.scheduledExecutorService.shutdownNow();
         }
 
 
