@@ -1,7 +1,6 @@
 package top.wboost.config.client.core;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -17,8 +16,11 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.ResponseEntity;
 import top.wboost.common.base.entity.HttpRequestBuilder;
-import top.wboost.common.base.enums.CharsetEnum;
 import top.wboost.common.log.util.LoggerUtil;
+import top.wboost.common.netty.handler.ProtocolHandler;
+import top.wboost.common.netty.protocol.NettyDecoder;
+import top.wboost.common.netty.protocol.NettyEncoder;
+import top.wboost.common.netty.protocol.NettyProtocol;
 import top.wboost.common.util.HttpClientUtil;
 
 import java.net.InetSocketAddress;
@@ -108,18 +110,9 @@ public class RestartProvider implements ApplicationListener<ApplicationEvent> {
                                     .handler(new LoggingHandler(LogLevel.INFO)).childHandler(new ChannelInitializer<SocketChannel>() {
                                 @Override
                                 protected void initChannel(SocketChannel socketChannel) throws Exception {
-                                    socketChannel.pipeline().addLast(new ChannelInboundHandlerAdapter() {
-                                        @Override
-                                        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                                            ByteBuf buf = (ByteBuf) msg;
-                                            byte[] data = new byte[buf.readableBytes()];
-                                            buf.readBytes(data);
-                                            String request = new String(data, CharsetEnum.UTF_8.getName());
-                                            restartObservers.forEach(restartObserver -> restartObserver.update(null, Ctx.getId(ctx) + "|" + request));
-                                            ctx.writeAndFlush(Unpooled.copiedBuffer("ok.".getBytes()));
-                                            addCtx(ctx);
-                                        }
-                                    });
+                                    socketChannel.pipeline().addLast(new NettyEncoder());
+                                    socketChannel.pipeline().addLast(new NettyDecoder());
+                                    socketChannel.pipeline().addLast(new LoggerHandler());
                                 }
                             })
                                     .option(ChannelOption.SO_BACKLOG, 1024)//设置TCP缓冲区
@@ -156,7 +149,6 @@ public class RestartProvider implements ApplicationListener<ApplicationEvent> {
             this.scheduledExecutorService.shutdownNow();
         }
 
-
         public void addCtx(ChannelHandlerContext ctx) {
             String id = Ctx.getId(ctx);
             if (!logs.containsKey(id)) {
@@ -189,6 +181,17 @@ public class RestartProvider implements ApplicationListener<ApplicationEvent> {
             public boolean canStopViewLog() {
                 return System.currentTimeMillis() - start > 60000;
             }
+        }
+
+        class LoggerHandler extends ProtocolHandler<NettyProtocol> {
+
+            @Override
+            public void channelReadInternal(NettyProtocol read) throws Exception {
+                restartObservers.forEach(restartObserver -> restartObserver.update(null, Ctx.getId(getCtx()) + "|" + read.stringVale()));
+                write("ok.");
+                addCtx(getCtx());
+            }
+
         }
     }
 

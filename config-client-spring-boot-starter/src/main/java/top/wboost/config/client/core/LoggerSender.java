@@ -1,9 +1,9 @@
 package top.wboost.config.client.core;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -11,7 +11,12 @@ import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
+import top.wboost.common.base.enums.CharsetEnum;
 import top.wboost.common.log.util.LoggerUtil;
+import top.wboost.common.netty.handler.ProtocolHandler;
+import top.wboost.common.netty.protocol.NettyDecoder;
+import top.wboost.common.netty.protocol.NettyEncoder;
+import top.wboost.common.netty.protocol.NettyProtocol;
 import top.wboost.common.util.LoggerViewer;
 import top.wboost.common.util.StringUtil;
 import top.wboost.common.utils.web.utils.DateUtil;
@@ -108,23 +113,9 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
                             .handler(new ChannelInitializer<SocketChannel>() {
                                 @Override
                                 protected void initChannel(SocketChannel socketChannel) throws Exception {
-                                    socketChannel.pipeline().addLast(new ChannelInboundHandlerAdapter() {
-                                        @Override
-                                        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                                            ByteBuf buf = (ByteBuf) msg;
-                                            byte[] data = new byte[buf.readableBytes()];
-                                            buf.readBytes(data);
-                                            String request = new String(data, "utf-8");
-                                            logger.debug("config server receive: " + request);
-                                            if (REQUEST_END.equals(request)) {
-                                                logger.info("logSender end! stop socket.");
-                                                // 等待完成传输
-                                                Thread.sleep(1000);
-                                                // 关闭所有
-                                                stopAll();
-                                            }
-                                        }
-                                    });
+                                    socketChannel.pipeline().addLast(new NettyEncoder());
+                                    socketChannel.pipeline().addLast(new NettyDecoder());
+                                    socketChannel.pipeline().addLast(new LoggerHandler());
                                 }
                             });
                     this.clientFuture = bootstrap.connect(new InetSocketAddress(sk_ip, sk_port)).sync();
@@ -134,7 +125,7 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
                             while (!queue.isEmpty()) {
                                 stringBuffer.append(queue.poll() + "\n");
                             }
-                            this.clientFuture.channel().writeAndFlush(Unpooled.copiedBuffer(stringBuffer.toString().getBytes()));
+                            this.clientFuture.channel().writeAndFlush(new NettyProtocol(stringBuffer.toString().getBytes(CharsetEnum.UTF_8.getCharset())));
                         }
                     }, 0, 1500, TimeUnit.MILLISECONDS);
                     this.clientFuture.channel().closeFuture().sync();
@@ -162,6 +153,20 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
         if (sendBegin) {
             logger.info("close loggerSender." );
             close();
+        }
+    }
+
+    class LoggerHandler extends ProtocolHandler<NettyProtocol> {
+
+        @Override
+        public void channelReadInternal(NettyProtocol read) throws Exception {
+            if (logger.isDebugEnabled())
+                logger.debug("config server receive: " + read.stringVale());
+            if (REQUEST_END.equals(read.stringVale())) {
+                logger.info("logSender end! stop socket.");
+                // 关闭所有
+                close();
+            }
         }
     }
 }
