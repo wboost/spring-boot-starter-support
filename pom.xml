@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>top.wboost</groupId>
-    <artifactId>common</artifactId>
-      <version>3.1.7-SNAPSHOT</version>
-  </parent>
-    <version>3.1.7-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.wboost</groupId>
+        <artifactId>common</artifactId>
+        <version>3.1.7-SNAPSHOT</version>
+    </parent>
+    <packaging>pom</packaging>
     <artifactId>spring-boot-starter-support</artifactId>
-  <name>spring-boot-starter-support</name>
-  <description>project auto plugins for spring-boot</description>
-	<url>http://www.wboost.top</url>
-	<developers>
-		<developer>
-			<id>wboost</id>
-			<name>jwsun</name>
-			<email>wboost.top@gmail.com</email>
-		</developer>
-	</developers>
-	<licenses>
+    <name>spring-boot-starter-support</name>
+    <description>project auto plugins for spring-boot</description>
+    <url>http://www.wboost.top</url>
+    <developers>
+        <developer>
+            <id>wboost</id>
+            <name>jwsun</name>
+            <email>wboost.top@gmail.com</email>
+        </developer>
+    </developers>
+    <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
@@ -31,68 +30,69 @@
         <connection>scm:git:git@github.com:wboost/spring-boot-starter-support.git</connection>
         <developerConnection>scm:git:git@github.com:wboost/spring-boot-starter-support.git</developerConnection>
         <url>https://github.com/wboost/spring-boot-starter-support</url>
-      	<tag>spring-boot-starter-support</tag>
-  	</scm>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <!-- wboost -->
-      <project-group-id>top.wboost</project-group-id>
-      <project-group-version>3.1.7-SNAPSHOT</project-group-version>
-      <!-- /postss -->
-  </properties>
-  <modules>
-    <module>base-spring-boot-starter</module>
-    <module>config-server-spring-boot-starter</module><module>config-client-spring-boot-starter</module>
-    <module>datasource-spring-boot-starter</module>
-    <module>mybatis-spring-boot-starter</module>
-    <module>webmvc-spring-boot-starter</module>
-    <module>swagger-spring-boot-starter</module>
-  </modules>
+        <tag>spring-boot-starter-support</tag>
+    </scm>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- wboost -->
+        <tools-group-id>top.wboost</tools-group-id>
+        <tools-group-version>3.1.7-SNAPSHOT</tools-group-version>
+        <!-- /wboost -->
+    </properties>
+    <modules>
+        <module>base-spring-boot-starter</module>
+        <module>config-server-spring-boot-starter</module>
+        <module>config-client-spring-boot-starter</module>
+        <module>datasource-spring-boot-starter</module>
+        <module>mybatis-spring-boot-starter</module>
+        <module>webmvc-spring-boot-starter</module>
+        <module>swagger-spring-boot-starter</module>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
             <!-- model -->
             <dependency>
-                <groupId>top.wboost</groupId>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
                 <artifactId>base-spring-boot-starter</artifactId>
-                <version>3.1.7-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>top.wboost</groupId>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
                 <artifactId>config-server-spring-boot-starter</artifactId>
-                <version>3.1.7-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>top.wboost</groupId>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
                 <artifactId>config-client-spring-boot-starter</artifactId>
-                <version>3.1.7-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>top.wboost</groupId>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
                 <artifactId>datasource-spring-boot-starter</artifactId>
-                <version>3.1.7-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>top.wboost</groupId>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
-                <version>3.1.7-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>top.wboost</groupId>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
                 <artifactId>webmvc-spring-boot-starter</artifactId>
-                <version>3.1.7-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>top.wboost</groupId>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
                 <artifactId>swagger-spring-boot-starter</artifactId>
-                <version>3.1.7-SNAPSHOT</version>
             </dependency>
             <!-- /model -->
         </dependencies>
     </dependencyManagement>
-  
-  <profiles>
-		<profile>
+
+    <profiles>
+        <profile>
             <id>release</id>
             <distributionManagement>
                 <snapshotRepository>
@@ -133,9 +133,9 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>  
-			                <additionalparam>-Xdoclint:none</additionalparam>  
-			            </configuration>  
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
                     </plugin>
                     <!-- Gpg Signature -->
                     <plugin>
@@ -154,9 +154,9 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
-        	<id>chinaoly</id>
+            <id>chinaoly</id>
             <distributionManagement>
                 <repository>
                     <id>releases</id>
@@ -174,69 +174,58 @@
                 </snapshotRepository>
             </distributionManagement>
         </profile>
-	</profiles>
-	
-	
-	
-	
+    </profiles>
 
-	<!-- build会共享给子项目 -->
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>${org.apache.maven.plugins.version}</version>
-					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-					</configuration>
-				</plugin>
 
-				<!-- 源码deploy -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
-					<configuration>
-						<attach>true</attach>
-					</configuration>
-					<executions>
-						<execution>
-							<phase>compile</phase>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${org.apache.maven.plugins.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
 
-				<plugin>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>${org.apache.maven.plugins.version}</version>
-				</plugin>
-				
-				<plugin>
-			        <artifactId>maven-resources-plugin</artifactId>
-			        <version>2.6</version>
-			        <executions>
-			          <execution>
-			            <id>default-testResources</id>
-			            <phase>process-test-resources</phase>
-			            <goals>
-			              <goal>testResources</goal>
-			            </goals>
-			          </execution>
-			          <execution>
-			            <id>default-resources</id>
-			            <phase>process-resources</phase>
-			            <goals>
-			              <goal>resources</goal>
-			            </goals>
-			          </execution>
-			        </executions>
-			      </plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+            <!-- 源码deploy -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>default-testResources</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>testResources</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

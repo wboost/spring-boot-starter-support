@@ -124,7 +124,7 @@ public class ConfigClientApplicationListener implements SpringApplicationRunList
                     }
                 }
             }
-            sb.append("-Dsk_ip=" + sk_ip + " -Dsk_port=" + sk_port + " -Dsk_ts=" + this.timestamp);
+            sb.append("-Dsk_ip=" + sk_ip + " -Dsk_port=" + sk_port + " -Dsk_ts=" + this.timestamp + " -Dsk_pid=" + pid);
             jvmParam = sb.toString();
             String arg = getParam(pid, "m");
             String cmd = StringUtil.format("/usr/bin/nohup java -jar " + jvmParam + " " + filePath + " " + arg + " >> " + logPath + " 2>&1 &");

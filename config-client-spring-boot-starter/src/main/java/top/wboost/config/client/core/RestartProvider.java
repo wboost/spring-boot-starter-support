@@ -18,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import top.wboost.common.base.entity.HttpRequestBuilder;
 import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.netty.handler.ProtocolHandler;
-import top.wboost.common.netty.protocol.NettyDecoder;
-import top.wboost.common.netty.protocol.NettyEncoder;
 import top.wboost.common.netty.protocol.NettyProtocol;
 import top.wboost.common.util.HttpClientUtil;
 
@@ -110,12 +108,11 @@ public class RestartProvider implements ApplicationListener<ApplicationEvent> {
                                     .handler(new LoggingHandler(LogLevel.INFO)).childHandler(new ChannelInitializer<SocketChannel>() {
                                 @Override
                                 protected void initChannel(SocketChannel socketChannel) throws Exception {
-                                    socketChannel.pipeline().addLast(new NettyEncoder());
-                                    socketChannel.pipeline().addLast(new NettyDecoder());
+                                    NettyProtocol.addHandler(socketChannel);
                                     socketChannel.pipeline().addLast(new LoggerHandler());
                                 }
                             })
-                                    .option(ChannelOption.SO_BACKLOG, 1024)//设置TCP缓冲区
+                                    .option(ChannelOption.SO_BACKLOG, 32 * 1024)//设置TCP缓冲区
                                     .option(ChannelOption.SO_RCVBUF, 32 * 1024)//设置接受数据缓冲大小
                                     .option(ChannelOption.SO_SNDBUF, 32 * 1024)//设置发送数据缓冲大小
                                     .option(ChannelOption.SO_KEEPALIVE, true); //保持连接

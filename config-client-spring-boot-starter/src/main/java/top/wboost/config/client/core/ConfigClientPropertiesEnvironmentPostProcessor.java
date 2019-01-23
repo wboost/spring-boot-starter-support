@@ -99,8 +99,8 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         public PropertySource<?> fetchPublic() {
             String url = serverAddr + requestMappingPrefix + "/public/" + applicationName;
             logger.info("fetch public config from config-server {}",serverAddr);
-            ResponseEntity<String> profiles = HttpClientUtil.execute(HttpRequestBuilder.get(url));
             try {
+                ResponseEntity<String> profiles = HttpClientUtil.execute(HttpRequestBuilder.get(url));
                 if (profiles.getStatusCode() == HttpStatus.OK) {
                     String body = profiles.getBody();
                     JSONObject jsonObject = JSONObject.parseObject(body);
@@ -113,6 +113,7 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
                     throw new RuntimeException(profiles.getStatusCode().toString());
                 }
             }catch (Exception e) {
+                e.printStackTrace();
                 return new MapPropertySource("wboostConfigClientFetch:public", new HashMap<>());
             }
         }

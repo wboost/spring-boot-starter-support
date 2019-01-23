@@ -14,8 +14,6 @@ import org.springframework.context.event.ContextClosedEvent;
 import top.wboost.common.base.enums.CharsetEnum;
 import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.netty.handler.ProtocolHandler;
-import top.wboost.common.netty.protocol.NettyDecoder;
-import top.wboost.common.netty.protocol.NettyEncoder;
 import top.wboost.common.netty.protocol.NettyProtocol;
 import top.wboost.common.util.LoggerViewer;
 import top.wboost.common.util.StringUtil;
@@ -24,6 +22,7 @@ import top.wboost.common.utils.web.utils.PropertiesUtil;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Observer;
@@ -49,6 +48,7 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
     private String logPath;
     private String sk_ip;
     private Integer sk_port;
+    private Integer sk_pid;
     private Long timestamp;
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private boolean sendStatus;
@@ -60,6 +60,7 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
             this.applicationName = PropertiesUtil.getProperty("spring.application.name");
             this.sk_ip = PropertiesUtil.getProperty("sk_ip");
             this.sk_port = Integer.parseInt(PropertiesUtil.getPropertyOrDefault("sk_port", "0"));
+            this.sk_pid = Integer.parseInt(PropertiesUtil.getPropertyOrDefault("sk_pid", "0"));
             this.timestamp = Long.parseLong(PropertiesUtil.getPropertyOrDefault("sk_ts", "0"));
             this.logPath = getLogPath();
             this.sendStatus = true;
@@ -84,7 +85,7 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
     }
 
     public boolean canSend() {
-        return this.sendStatus && StringUtil.notEmpty(sk_ip) && sk_port != 0 && timestamp != 0;
+        return this.sendStatus && StringUtil.notEmpty(sk_ip) && sk_port != 0 && timestamp != 0 && sk_pid != 0;
     }
 
     public void close() {
@@ -98,6 +99,15 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
 
     public boolean start() {
         if (canSend()) {
+            // kill last pid
+            String killCmd = "kill -9 " + sk_pid;
+            logger.info("exec  cmd is " + killCmd);
+            try {
+                Runtime.getRuntime().exec(new String[]{"sh", "-c", killCmd});
+                logger.info("kill process {}", sk_pid);
+            } catch (IOException e) {
+                logger.error("kill process {} error.", e);
+            }
             Thread thread = new Thread(() -> {
                 logger.info("socket for log.sk_ip:{},sk_port:{}.sk_ts:{}", sk_ip, sk_port, timestamp);
                 this.workerGroup = new NioEventLoopGroup();
@@ -113,8 +123,7 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
                             .handler(new ChannelInitializer<SocketChannel>() {
                                 @Override
                                 protected void initChannel(SocketChannel socketChannel) throws Exception {
-                                    socketChannel.pipeline().addLast(new NettyEncoder());
-                                    socketChannel.pipeline().addLast(new NettyDecoder());
+                                    NettyProtocol.addHandler(socketChannel);
                                     socketChannel.pipeline().addLast(new LoggerHandler());
                                 }
                             });

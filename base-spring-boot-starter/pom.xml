@@ -2,46 +2,26 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>top.wboost</groupId>
-    <artifactId>spring-boot-starter-support</artifactId>
-	  <version>3.1.7-SNAPSHOT</version>
-  </parent>
-  <artifactId>base-spring-boot-starter</artifactId>
-  <name>base-spring-boot-starter</name>
-  <properties>
-  		<!-- chinaoly -->
-		<project-group-id>top.wboost</project-group-id>
-	  <project-group-version>3.1.7-SNAPSHOT</project-group-version>
-		<!-- /chinaoly -->
-
-		<!-- config -->
-		<java.version>1.8</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven-compiler-plugin>3.1</maven-compiler-plugin>
-		<!-- /config -->
-	</properties>
-	<dependencies>
-		<dependency>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.wboost</groupId>
+        <artifactId>spring-boot-starter-support</artifactId>
+        <version>3.1.7-SNAPSHOT</version>
+    </parent>
+    <artifactId>base-spring-boot-starter</artifactId>
+    <name>base-spring-boot-starter</name>
+    <properties>
+        <main.basedir>${basedir}/../</main.basedir>
+    </properties>
+    <dependencies>
+        <dependency>
             <groupId>top.wboost</groupId>
-			<version>3.1.7-SNAPSHOT</version>
-			<artifactId>common-boot</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<!--<scope>test</scope>-->
-		</dependency>
-	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-			</plugin>
-			<plugin>
-		          <artifactId>maven-source-plugin</artifactId>
-		    </plugin>
-		</plugins>
-	</build>
+            <artifactId>common-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <!--<scope>test</scope>-->
+        </dependency>
+    </dependencies>
 </project>
