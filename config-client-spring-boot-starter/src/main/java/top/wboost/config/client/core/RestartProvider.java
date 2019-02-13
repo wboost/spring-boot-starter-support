@@ -16,6 +16,7 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.ResponseEntity;
 import top.wboost.common.base.entity.HttpRequestBuilder;
+import top.wboost.common.constant.Global;
 import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.netty.handler.ProtocolHandler;
 import top.wboost.common.netty.protocol.NettyProtocol;
@@ -79,7 +80,6 @@ public class RestartProvider implements ApplicationListener<ApplicationEvent> {
         }
     }
 
-
     public static class NettyContainer {
         private static final Logger LOGGER = LoggerUtil.getLogger(NettyContainer.class);
         List<EventLoopGroup> eventLoopGroups = new ArrayList<>();
@@ -119,14 +119,20 @@ public class RestartProvider implements ApplicationListener<ApplicationEvent> {
                             ChannelFuture future = bootstrap.bind(socketPort).sync();
                             LOGGER.info("start socket for log. port:" + socketPort);
                             scheduledExecutorService.scheduleAtFixedRate(() -> {
+                                LOGGER.info("------begin clear socket------");
                                 Iterator<Map.Entry<String, Ctx>> iterator = logs.entrySet().iterator();
                                 while (iterator.hasNext()) {
                                     Map.Entry<String, Ctx> next = iterator.next();
                                     if (next.getValue().canStopViewLog()) {
+                                        LOGGER.info("------clear socket {} {} {} ------", next.getValue().clientIP, next.getValue().port, next.getValue().start);
                                         next.getValue().ctx.writeAndFlush(Unpooled.copiedBuffer(REQUEST_END.getBytes()));
+                                        iterator.remove();
                                     }
                                 }
-                            }, 0, 1500, TimeUnit.MILLISECONDS);
+                                if (Global.ISDEBUG) {
+                                    LOGGER.info(logs.toString());
+                                }
+                            }, 0, 10000, TimeUnit.MILLISECONDS);
                             future.channel().closeFuture().sync();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -177,6 +183,15 @@ public class RestartProvider implements ApplicationListener<ApplicationEvent> {
 
             public boolean canStopViewLog() {
                 return System.currentTimeMillis() - start > 60000;
+            }
+
+            @Override
+            public String toString() {
+                return "Ctx{" +
+                        "clientIP='" + clientIP + '\'' +
+                        ", port=" + port +
+                        ", start=" + start +
+                        '}';
             }
         }
 

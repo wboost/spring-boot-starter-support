@@ -50,6 +50,7 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
     private Integer sk_port;
     private Integer sk_pid;
     private Long timestamp;
+    private Long beginSendTimestamp;
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private boolean sendStatus;
     private boolean sendBegin;
@@ -108,6 +109,7 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
             } catch (IOException e) {
                 logger.error("kill process {} error.", e);
             }
+            beginSendTimestamp = System.currentTimeMillis();
             Thread thread = new Thread(() -> {
                 logger.info("socket for log.sk_ip:{},sk_port:{}.sk_ts:{}", sk_ip, sk_port, timestamp);
                 this.workerGroup = new NioEventLoopGroup();
@@ -129,6 +131,10 @@ public class LoggerSender implements ApplicationListener<ContextClosedEvent> {
                             });
                     this.clientFuture = bootstrap.connect(new InetSocketAddress(sk_ip, sk_port)).sync();
                     scheduledExecutorService.scheduleAtFixedRate(() -> {
+                        if (System.currentTimeMillis() - beginSendTimestamp > 60000) {
+                            onApplicationEvent(null);
+                            return;
+                        }
                         StringBuffer stringBuffer = new StringBuffer();
                         if (!queue.isEmpty()) {
                             while (!queue.isEmpty()) {
