@@ -5,7 +5,7 @@
     <parent>
         <groupId>top.wboost</groupId>
         <artifactId>common</artifactId>
-        <version>3.1.7-SNAPSHOT</version>
+        <version>3.1.7.RELEASE</version>
     </parent>
     <packaging>pom</packaging>
     <artifactId>spring-boot-starter-support</artifactId>
@@ -32,11 +32,20 @@
         <url>https://github.com/wboost/spring-boot-starter-support</url>
         <tag>spring-boot-starter-support</tag>
     </scm>
+    <repositories>
+        <repository>
+            <id>aliyun</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- wboost -->
         <tools-group-id>top.wboost</tools-group-id>
-        <tools-group-version>3.1.7-SNAPSHOT</tools-group-version>
+        <tools-group-version>3.1.7.RELEASE</tools-group-version>
         <!-- /wboost -->
     </properties>
     <modules>
