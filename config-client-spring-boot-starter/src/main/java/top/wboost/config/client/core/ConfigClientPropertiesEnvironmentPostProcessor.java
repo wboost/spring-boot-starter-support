@@ -49,12 +49,14 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         environmentInit.merge(SpringBootPropertiesLoadUtil.getInitEnvironment());
         String serverId = environmentInit.getProperty("common.config.client.server-id");
         String serverAddr = environmentInit.getProperty("common.config.client.server-addr");
+        String prefix = environmentInit.getProperty("common.config.client.prefix");
         String applicationName = environmentInit.getProperty("spring.application.name");
         SimpleFetchConfigProcessor fetchConfigProcessor = new SimpleFetchConfigProcessor();
         fetchConfigProcessor.setServerId(serverId);
         fetchConfigProcessor.setServerAddr(serverAddr);
         fetchConfigProcessor.setApplicationName(applicationName);
         fetchConfigProcessor.setProfiles(environmentInit.getActiveProfiles());
+        fetchConfigProcessor.setPrefix(prefix == null ? "" : prefix);
         List<PropertySource<?>> environmentFetch = fetchConfigProcessor.fetchConfig();
         if (environmentInit.getProperty(IS_DEBUG) != null && Boolean.valueOf(environmentInit.getProperty(IS_DEBUG))) {
             System.out.println(JSONObject.toJSONString(environmentFetch));
@@ -75,6 +77,7 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         private String serverId;
         private String applicationName;
         private String[] profiles;
+        private String prefix;
 
         @Override
         public void registerClient(ConfigurableEnvironment environment) {
@@ -119,7 +122,7 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         }
 
         public List<PropertySource<?>> fetchOwnByProfile() {
-            String url = serverAddr + "/config/" + applicationName + "/";
+            String url = serverAddr + "/" + prefix + "/" + applicationName + "/";
             List<PropertySource<?>> sources = new ArrayList<>();
             try {
                 for (String profile : profiles) {

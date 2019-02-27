@@ -23,6 +23,7 @@ import top.wboost.common.boot.util.SpringBootUtil;
 import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.system.code.SystemCode;
 import top.wboost.common.system.exception.SystemCodeException;
+import top.wboost.common.util.RandomUtil;
 import top.wboost.common.util.StringUtil;
 
 import java.util.*;
@@ -92,7 +93,8 @@ public class TransactionInterceptorConfiguration implements ImportBeanDefinition
                 AbstractBeanDefinition advisorBeanDefinition = beanFactoryPointcutAdvisorConfiguration.createAdvisorBeanDefinition(transactionInterceptorBeanName,pointcutConfig);
                 AbstractBeanDefinition pointcutDefinition = beanFactoryPointcutAdvisorConfiguration.createPointcutDefinition(pointcutConfig.expression());
                 advisorBeanDefinition.getPropertyValues().add("pointcut", pointcutDefinition);
-                String name = beanNameGenerator.generateBeanName(advisorBeanDefinition, registry);
+                //String name = beanNameGenerator.generateBeanName(advisorBeanDefinition, registry);
+                String name = "InterceptorDefaultBeanFactoryPointcutAdvisor" + RandomUtil.getUuid();
                 registry.registerBeanDefinition(name, advisorBeanDefinition);
                 logger.info("register PointcutAdvisor: {} for Config: {}" ,name,transactionInterceptorBeanName);
             }
@@ -102,7 +104,7 @@ public class TransactionInterceptorConfiguration implements ImportBeanDefinition
     private String generatorTransactionInterceptorBeanName(EnableTransactionInterceptors.Config transactionInterceptorConfig) {
         String transactionInterceptorBeanName = transactionInterceptorConfig.name();
         if (!StringUtil.notEmpty(transactionInterceptorBeanName)) {
-            transactionInterceptorBeanName = "transactionInterceptor#" + GlobalForDataSourceBootStarter.PRIMARYT_TRANSACTION_MANAGER;
+            transactionInterceptorBeanName = "transactionInterceptor#" + RandomUtil.getUuid();
         }
         return transactionInterceptorBeanName;
     }

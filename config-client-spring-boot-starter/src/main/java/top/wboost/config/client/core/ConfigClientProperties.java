@@ -25,4 +25,9 @@ public class ConfigClientProperties {
      */
     private String applicationName;
 
+    /**
+     * 配置中心前缀
+     */
+    private String prefix = "";
+
 }
