@@ -6,7 +6,7 @@
     <parent>
         <groupId>top.wboost</groupId>
         <artifactId>spring-boot-starter-support</artifactId>
-        <version>3.1.9-SNAPSHOT</version>
+        <version>3.1.9.RELEASE</version>
     </parent>
     <artifactId>swagger-spring-boot-starter</artifactId>
     <properties>

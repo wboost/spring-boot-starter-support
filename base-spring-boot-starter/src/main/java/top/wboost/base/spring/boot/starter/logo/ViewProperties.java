@@ -31,6 +31,16 @@ public class ViewProperties {
     String bottomText;
 
     /**
+     * 展示下方栏
+     */
+    boolean showBottom = true;
+
+    /**
+     * 展示上方栏
+     */
+    boolean showTop = true;
+
+    /**
      * 其他配置
      */
     Map<String, String> config;
