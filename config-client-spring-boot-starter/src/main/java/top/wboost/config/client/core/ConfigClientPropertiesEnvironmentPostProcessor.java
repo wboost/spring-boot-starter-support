@@ -20,6 +20,7 @@ import top.wboost.common.base.entity.HttpRequestBuilder;
 import top.wboost.common.exception.BusinessCodeException;
 import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.util.HttpClientUtil;
+import top.wboost.common.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +62,8 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
         if (environmentInit.getProperty(IS_DEBUG) != null && Boolean.valueOf(environmentInit.getProperty(IS_DEBUG))) {
             System.out.println(JSONObject.toJSONString(environmentFetch));
         }
-        environmentFetch.forEach(propertySource -> environment.getPropertySources().addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, propertySource));
+        //environmentFetch.forEach(propertySource -> environment.getPropertySources().addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, propertySource));
+        environmentFetch.forEach(propertySource -> environment.getPropertySources().addFirst(propertySource));
         fetchConfigProcessor.registerClient(environment);
     }
 
@@ -94,7 +96,11 @@ public class ConfigClientPropertiesEnvironmentPostProcessor implements Environme
 
         public List<PropertySource<?>> fetchConfig() {
             List<PropertySource<?>> environmentList = new ArrayList<>();
-            environmentList.add(fetchPublic());
+            PropertySource<?> propertySource = fetchPublic();
+            if ((!StringUtil.notEmpty(prefix)) && propertySource.containsProperty("common.config.client.prefix")) {
+                prefix = propertySource.getProperty("common.config.client.prefix").toString();
+            }
+            environmentList.add(propertySource);
             environmentList.addAll(fetchOwnByProfile());
             return environmentList;
         }

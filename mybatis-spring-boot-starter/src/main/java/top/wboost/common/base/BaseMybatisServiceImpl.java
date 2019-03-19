@@ -1,25 +1,11 @@
 package top.wboost.common.base;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.persistence.Id;
-
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
 import top.wboost.common.base.enums.QueryType;
@@ -31,6 +17,12 @@ import top.wboost.common.base.service.impl.BaseServiceImpl;
 import top.wboost.common.system.code.SystemCode;
 import top.wboost.common.system.exception.SystemCodeException;
 import top.wboost.common.util.ReflectUtil;
+
+import javax.persistence.Id;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 public class BaseMybatisServiceImpl<T, Mapper extends tk.mybatis.mapper.common.Mapper<T>, ID extends java.io.Serializable>
         extends BaseServiceImpl<T, ID> implements BaseService<T, ID> {
@@ -150,16 +142,7 @@ public class BaseMybatisServiceImpl<T, Mapper extends tk.mybatis.mapper.common.M
 
     @Override
     public Page<T> findList(T t, String... likeFields) {
-        try {
-            Example example = resolveExample(t, likeFields);
-            List<T> list = mapper.selectByExample(example);
-            PageInfo<T> info = new PageInfo<T>(list);
-            Page<T> page = new PageImpl<T>(info.getList(), new QueryPage().getPageResolver(), info.getTotal());
-            return page;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return null;
+        return findList(t, new QueryPage());
     }
 
     @Override

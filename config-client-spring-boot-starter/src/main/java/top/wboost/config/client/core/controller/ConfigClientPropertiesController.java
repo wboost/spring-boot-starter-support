@@ -42,7 +42,7 @@ public class ConfigClientPropertiesController {
     @GetMapping("env")
     @Explain(systemCode = SystemCode.DO_FAIL, value = "获取环境配置")
     public ResultEntity env() {
-        return ResultEntity.success(SystemCode.DO_OK).setData(ConfigProperties.localenv).build();
+        return ResultEntity.success(SystemCode.DO_OK).setData(ConfigProperties.environment).build();
     }
 
     @lombok.Data
