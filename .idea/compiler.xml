@@ -7,13 +7,15 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="base-spring-boot-starter" />
-        <module name="config-client-spring-boot-starter" />
-        <module name="config-server-spring-boot-starter" />
-        <module name="datasource-spring-boot-starter" />
-        <module name="mybatis-spring-boot-starter" />
-        <module name="swagger-spring-boot-starter" />
-        <module name="webmvc-spring-boot-starter" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="config-client-spring-boot-starter" target="1.8" />
+      <module name="config-server-spring-boot-starter" target="1.8" />
+      <module name="datasource-spring-boot-starter" target="1.8" />
+      <module name="mybatis-spring-boot-starter" target="1.8" />
+      <module name="swagger-spring-boot-starter" target="1.8" />
+      <module name="webmvc-spring-boot-starter" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

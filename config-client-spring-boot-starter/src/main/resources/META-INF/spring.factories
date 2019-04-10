@@ -1,5 +1,0 @@
-# Environment Post Processors
-org.springframework.boot.env.EnvironmentPostProcessor=\
- top.wboost.config.client.core.ConfigClientPropertiesEnvironmentPostProcessor
-org.springframework.boot.SpringApplicationRunListener=\
- top.wboost.config.client.core.ConfigClientApplicationListener
