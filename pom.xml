@@ -5,7 +5,7 @@
     <parent>
         <groupId>top.wboost</groupId>
         <artifactId>common</artifactId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>4.0.0.RELEASE</version>
     </parent>
     <packaging>pom</packaging>
     <artifactId>spring-boot-starter-support</artifactId>
@@ -45,7 +45,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- wboost -->
         <tools-group-id>top.wboost</tools-group-id>
-        <tools-group-version>3.2.2-SNAPSHOT</tools-group-version>
+        <tools-group-version>4.0.0.RELEASE</tools-group-version>
         <!-- /wboost -->
         <org.apache.maven.plugins.version>3.1</org.apache.maven.plugins.version>
     </properties>
@@ -91,6 +91,38 @@
                 <version>${tools-group-version}</version>
                 <artifactId>swagger-spring-boot-starter</artifactId>
             </dependency>
+            <!-- extend -->
+            <dependency>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
+                <artifactId>es-2-spring-boot-starter</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
+                <artifactId>es-5-spring-boot-starter</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
+                <artifactId>kylin-spring-boot-starter</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
+                <artifactId>netty-spring-boot-starter</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
+                <artifactId>cache-spring-boot-starter</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>${tools-group-id}</groupId>
+                <version>${tools-group-version}</version>
+                <artifactId>queue-redis-spring-boot-starter</artifactId>
+            </dependency>
+            <!-- /extend -->
             <!-- /model -->
         </dependencies>
     </dependencyManagement>
