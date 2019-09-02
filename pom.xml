@@ -5,7 +5,7 @@
     <parent>
         <groupId>top.wboost</groupId>
         <artifactId>common</artifactId>
-        <version>4.0.0.RELEASE</version>
+        <version>4.0.1-SNAPSHOT</version>
     </parent>
     <packaging>pom</packaging>
     <artifactId>spring-boot-starter-support</artifactId>
@@ -51,6 +51,16 @@
     </properties>
     <modules>
         <module>base-spring-boot-starter</module>
+        <module>cache-spring-boot-starter</module>
+        <module>config-client-spring-boot-starter</module>
+        <module>datasource-spring-boot-starter</module>
+        <module>es-spring-boot-starter</module>
+        <module>kylin-spring-boot-starter</module>
+        <module>mybatis-spring-boot-starter</module>
+        <module>netty-spring-boot-starter</module>
+        <module>queue-spring-boot-starter</module>
+        <module>swagger-spring-boot-starter</module>
+        <module>webmvc-spring-boot-starter</module>
     </modules>
 
     <dependencyManagement>
@@ -261,6 +271,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <scmCommentPrefix>[release]</scmCommentPrefix>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
             </plugin>
         </plugins>
     </build>
