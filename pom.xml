@@ -43,10 +43,6 @@
     </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- wboost -->
-        <tools-group-id>top.wboost</tools-group-id>
-        <tools-group-version>4.0.0.RELEASE</tools-group-version>
-        <!-- /wboost -->
         <org.apache.maven.plugins.version>3.1</org.apache.maven.plugins.version>
     </properties>
     <modules>
@@ -67,69 +63,69 @@
         <dependencies>
             <!-- model -->
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>base-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>config-server-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>config-client-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>datasource-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>webmvc-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>swagger-spring-boot-starter</artifactId>
             </dependency>
             <!-- extend -->
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>es-2-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>es-5-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>kylin-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>netty-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>cache-spring-boot-starter</artifactId>
             </dependency>
             <dependency>
-                <groupId>${tools-group-id}</groupId>
-                <version>${tools-group-version}</version>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
                 <artifactId>queue-redis-spring-boot-starter</artifactId>
             </dependency>
             <!-- /extend -->

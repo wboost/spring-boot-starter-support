@@ -2,3 +2,9 @@
 /.apt_generated/
 /.idea/
 **/.DS_Store
+**/release.properties
+**/pom.xml.releaseBackup
+**/pom.xml.next
+**/pom.xml.tag
+**/pom.xml.branch
+**/pom.xml.backup
