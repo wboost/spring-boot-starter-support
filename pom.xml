@@ -229,8 +229,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${org.apache.maven.plugins.version}</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>1.8.0_211</source>
+                    <target>1.8.0_211</target>
                 </configuration>
             </plugin>
 
