@@ -29,8 +29,8 @@
     <scm>
         <connection>scm:git:git@github.com:wboost/spring-boot-starter-support.git</connection>
         <developerConnection>scm:git:git@github.com:wboost/spring-boot-starter-support.git</developerConnection>
-        <url>https://github.com/wboost/spring-boot-starter-support</url>
-        <tag>spring-boot-starter-support</tag>
+        <url>git@github.com:wboost/spring-boot-starter-support</url>
+        <tag>HEAD</tag>
     </scm>
     <repositories>
         <repository>
