@@ -4,7 +4,7 @@
     <parent>
         <groupId>top.wboost</groupId>
         <artifactId>queue-spring-boot-starter</artifactId>
-        <version>4.0.1</version>
+        <version>4.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>queue-redis-spring-boot-starter</artifactId>
     <name>queue-redis-spring-boot-starter</name>
