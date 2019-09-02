@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>top.wboost</groupId>
-        <artifactId>common</artifactId>
+        <artifactId>spring-boot-starter-support</artifactId>
         <version>4.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>kylin-spring-boot-starter</artifactId>

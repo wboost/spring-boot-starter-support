@@ -2,12 +2,9 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>top.wboost</groupId>
-        <artifactId>common</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
-    </parent>
+    <version>4.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <groupId>top.wboost</groupId>
     <artifactId>spring-boot-starter-support</artifactId>
     <name>spring-boot-starter-support</name>
     <description>project auto plugins for spring-boot</description>
@@ -62,8 +59,8 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>${project.groupId}</groupId>
-                <version>4.0.1.RELEASE</version>
+                <groupId>top.wboost</groupId>
+                <version>${project.version}</version>
                 <artifactId>common</artifactId>
                 <type>pom</type>
                 <scope>import</scope>
