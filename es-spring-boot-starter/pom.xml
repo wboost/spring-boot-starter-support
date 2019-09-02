@@ -29,7 +29,6 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <version>${project.version}</version>
             <artifactId>common-web</artifactId>
             <scope>compile</scope>
         </dependency>

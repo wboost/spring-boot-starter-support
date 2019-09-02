@@ -61,6 +61,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <version>4.0.1.RELEASE</version>
+                <artifactId>common</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- model -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
