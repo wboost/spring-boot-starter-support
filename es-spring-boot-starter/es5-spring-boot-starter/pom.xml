@@ -1,0 +1,42 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.wboost</groupId>
+        <artifactId>es-spring-boot-starter</artifactId>
+        <version>4.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>es5-spring-boot-starter</artifactId>
+    <properties>
+        <main.basedir>${basedir}/../</main.basedir>
+        <es.version>5.6.14</es.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>top.wboost</groupId>
+            <artifactId>common-es-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${es.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>${es.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>elasticsearch</artifactId>
+                    <groupId>org.elasticsearch</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>top.wboost</groupId>
+            <artifactId>common-sql</artifactId>
+        </dependency>
+    </dependencies>
+</project>

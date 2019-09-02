@@ -1,0 +1,6 @@
+/.apt_generated/
+/target/
+/bin/
+.factorypath
+/.idea/
+**/.DS_Store

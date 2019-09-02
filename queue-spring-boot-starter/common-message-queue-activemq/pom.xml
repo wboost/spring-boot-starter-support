@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+		xmlns="http://maven.apache.org/POM/4.0.0">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>top.wboost</groupId>
+		<artifactId>common-message-queue</artifactId>
+        <version>4.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>common-message-queue-activemq</artifactId>
+	<name>common-message-queue-activemq</name>
+	<properties>
+		<activemq.version>5.9.1</activemq.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>top.wboost</groupId>
+			<artifactId>common-message-queue-base</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-all</artifactId>
+			<version>${activemq.version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

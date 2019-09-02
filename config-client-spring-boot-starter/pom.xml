@@ -1,0 +1,28 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>jar</packaging>
+	<parent>
+		<groupId>top.wboost</groupId>
+		<artifactId>spring-boot-starter-support</artifactId>
+        <version>4.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>config-client-spring-boot-starter</artifactId>
+	<properties>
+		<main.basedir>${basedir}/../</main.basedir>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>${tools-group-id}</groupId>
+			<artifactId>swagger-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${tools-group-id}</groupId>
+			<artifactId>netty-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+		</dependency>
+	</dependencies>
+</project>
