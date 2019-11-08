@@ -1,3 +1,4 @@
+import com.alibaba.fastjson.JSONObject;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
@@ -40,6 +41,7 @@ import top.wboost.common.utils.web.utils.PropertiesUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static top.wboost.common.es.util.EsQueryAction.TERMS_NAME;
@@ -127,12 +129,6 @@ public class EsUtilTest {
         idAggs.must("apiId", "\"" + apiId + "\"");
         EsResultEntity entity = EsQueryUtil.queryAggregationList(idAggs, null);
         System.out.println(entity.getAggregationMap().get(apiId));
-    }
-
-    @Test
-    public void create() {
-        // config();
-
     }
 
 }

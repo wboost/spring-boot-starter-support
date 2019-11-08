@@ -59,7 +59,7 @@
         <dependencies>
             <dependency>
                 <groupId>top.wboost</groupId>
-                <version>4.0.1</version>
+                <version>4.0.2-SNAPSHOT</version>
                 <artifactId>common</artifactId>
                 <type>pom</type>
                 <scope>import</scope>

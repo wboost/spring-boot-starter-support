@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import top.wboost.base.spring.boot.starter.GlobalForSpringBootStarter;
 import top.wboost.common.annotation.Explain;
 import top.wboost.common.base.entity.ResultEntity;
+import top.wboost.common.base.enums.CharsetEnum;
 import top.wboost.common.log.util.LoggerUtil;
 import top.wboost.common.system.code.SystemCode;
 import top.wboost.common.utils.web.utils.DownloadUtil;
@@ -39,7 +40,7 @@ public class LoggerDownloadController {
     public void showLogger(HttpServletResponse response, String file) {
         if (LoggerUtil.getLoggerFile().contains(file)) {
             File exportFile = new File(file);
-            HtmlUtil.writerJson(response, FileUtil.importFile(exportFile));
+            HtmlUtil.writerJson(response, FileUtil.importFile(exportFile, CharsetEnum.UTF_8));
         } else {
             HtmlUtil.writerJson(response, "no file.");
         }
